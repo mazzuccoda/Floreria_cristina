@@ -160,3 +160,61 @@ h1, h2, h3 {
 .carrito-btn:hover {
   background-color: #e39c00;
 }
+.producto {
+  background: #fff;
+  border-radius: 10px;
+  box-shadow: 0 2px 8px rgba(0,0,0,0.08);
+  overflow: hidden;
+  display: flex;
+  flex-direction: column;
+  transition: transform 0.3s;
+}
+
+.producto:hover {
+  transform: scale(1.02);
+}
+
+.producto-img img {
+  width: 100%;
+  height: 220px;
+  object-fit: cover;
+}
+
+.producto-info {
+  padding: 15px;
+  text-align: center;
+}
+
+.producto-info h3 {
+  font-size: 1.1rem;
+  color: #333;
+  margin-bottom: 8px;
+}
+
+.producto-info .price {
+  font-size: 1.2rem;
+  color: #4c9a58;
+  font-weight: bold;
+  margin-bottom: 6px;
+}
+
+.producto-info .descuento {
+  color: #cc0000;
+  font-weight: bold;
+  margin-bottom: 8px;
+}
+
+.producto-info button {
+  background: #4c9a58;
+  color: white;
+  border: none;
+  padding: 10px 18px;
+  border-radius: 6px;
+  cursor: pointer;
+  font-size: 0.95rem;
+  transition: background 0.3s ease;
+}
+
+.producto-info button:hover {
+  background: #3b8147;
+}
