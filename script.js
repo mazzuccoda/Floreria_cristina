@@ -124,3 +124,90 @@ function consultar(nombre) {
 
 // Inicializar el icono del carrito al cargar la página
 document.addEventListener('DOMContentLoaded', updateCartIcon);
+
+<script>
+let cartItems = [];
+
+function openCart() {
+  document.getElementById("cart-modal").style.display = "block";
+  renderCart();
+}
+
+function closeCart() {
+  document.getElementById("cart-modal").style.display = "none";
+}
+
+function clearCart() {
+  cartItems = [];
+  renderCart();
+  updateCartCount();
+}
+
+// Esta función se puede vincular al botón "Añadir al carrito"
+function addToCart(name, price, image) {
+  const existingItem = cartItems.find(item => item.name === name);
+  if (existingItem) {
+    existingItem.quantity += 1;
+  } else {
+    cartItems.push({ name, price, image, quantity: 1 });
+  }
+  renderCart();
+  updateCartCount();
+}
+
+function removeItem(index) {
+  cartItems.splice(index, 1);
+  renderCart();
+  updateCartCount();
+}
+
+function updateQuantity(index, change) {
+  const item = cartItems[index];
+  item.quantity += change;
+  if (item.quantity <= 0) removeItem(index);
+  else renderCart();
+  updateCartCount();
+}
+
+function renderCart() {
+  const container = document.getElementById("cart-items");
+  const totalDisplay = document.getElementById("cart-total-price");
+  container.innerHTML = "";
+  let total = 0;
+
+  if (cartItems.length === 0) {
+    container.innerHTML = "<p>Tu carrito está vacío.</p>";
+    totalDisplay.innerText = "$0";
+    return;
+  }
+
+  cartItems.forEach((item, index) => {
+    const subtotal = item.price * item.quantity;
+    total += subtotal;
+
+    container.innerHTML += `
+      <div class="cart-item">
+        <img src="${item.image}" alt="${item.name}">
+        <div style="flex-grow:1;">
+          <h4>${item.name}</h4>
+          <span>$${item.price.toLocaleString()} c/u</span>
+          <div class="cart-controls">
+            <button onclick="updateQuantity(${index}, -1)">-</button>
+            <span>${item.quantity}</span>
+            <button onclick="updateQuantity(${index}, 1)">+</button>
+          </div>
+        </div>
+        <button class="cart-remove" onclick="removeItem(${index})">&times;</button>
+      </div>
+    `;
+  });
+
+  totalDisplay.innerText = "$" + total.toLocaleString();
+}
+
+function updateCartCount() {
+  const count = cartItems.reduce((sum, item) => sum + item.quantity, 0);
+  const badge = document.getElementById("cart-count");
+  if (badge) badge.textContent = count;
+}
+</script>
