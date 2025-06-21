@@ -2,7 +2,7 @@
 <html lang="es">
 <head>
   <meta charset="UTF-8" />
-  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <meta name="viewport" content="width=device-width,initial-scale=1.0" />
   <title>Catálogo - Cristina</title>
   <link href="https://fonts.googleapis.com/css2?family=Quicksand:wght@400;600&display=swap" rel="stylesheet">
   <link rel="stylesheet" href="style.css" />
@@ -21,12 +21,13 @@
 
   <script>
     fetch('https://docs.google.com/spreadsheets/d/e/2PACX-1vSuWDiLqjNQr0EIVb2zuyzzKMzgn1MHeu6me8QSE2KejtocSuEbHFkY4tma_rDTcl-Ba3Z7TldQpeGQ/pub?output=csv')
-      .then(r => r.text())
+      .then(res => res.text())
       .then(csv => {
         const rows = csv.trim().split('\n').slice(1);
         const cont = document.getElementById('catalogo-container');
         cont.innerHTML = '';
         rows.forEach(line => {
+          if (!line) return;
           const [id, categoria, imgUrl, descripcion, precio, descuento] = line.split(',');
           const div = document.createElement('div');
           div.className = 'producto';
