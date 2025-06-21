@@ -27,27 +27,6 @@
       .then(csv => {
         const rows = csv.trim().split('\n').slice(1);
         const cont = document.getElementById('catalogo-container');
-        cont.innerHTML = '';
-        rows.forEach(line => {
-          const [id, categoria, imgUrl, descripcion, precio, descuento, stock, activo] = line.split(',');
+        con
 
-          if (activo.trim().toLowerCase() !== 'sí') return;
-
-          const div = document.createElement('div');
-          div.className = 'producto';
-          div.innerHTML = `
-            <img src="${imgUrl}" alt="${descripcion}" />
-            <h3>${descripcion}</h3>
-            <p>Precio: $${precio}</p>
-            ${descuento ? `<p class="descuento">Descuento: ${descuento}</p>` : ''}
-            ${stock ? `<p>Stock: ${stock}</p>` : ''}
-            <button onclick="agregarAlCarrito('${descripcion}', ${precio})">Agregar al carrito</button>
-          `;
-          cont.appendChild(div);
-        });
-      })
-      .catch(console.error);
-  </script>
-</body>
-</html>
 
