@@ -5,7 +5,7 @@
   <meta name="viewport" content="width=device-width,initial-scale=1.0" />
   <title>Catálogo - Cristina</title>
   <link href="https://fonts.googleapis.com/css2?family=Quicksand:wght@400;600&display=swap" rel="stylesheet">
-  <link rel="stylesheet" href="style.css" />
+  <link rel="stylesheet" href="styles.css" />
 </head>
 <body>
   <header>
@@ -15,10 +15,12 @@
 
   <main>
     <div id="catalogo-container" class="catalogo"></div>
+    <button class="carrito-btn" onclick="verCarrito()">🛒 Ver carrito</button>
   </main>
 
   <footer>&copy; 2025 Florería y Vivero Cristina</footer>
 
+  <script src="cart.js"></script>
   <script>
     fetch('https://docs.google.com/spreadsheets/d/e/2PACX-1vSuWDiLqjNQr0EIVb2zuyzzKMzgn1MHeu6me8QSE2KejtocSuEbHFkY4tma_rDTcl-Ba3Z7TldQpeGQ/pub?output=csv')
       .then(res => res.text())
@@ -27,8 +29,10 @@
         const cont = document.getElementById('catalogo-container');
         cont.innerHTML = '';
         rows.forEach(line => {
-          if (!line) return;
-          const [id, categoria, imgUrl, descripcion, precio, descuento] = line.split(',');
+          const [id, categoria, imgUrl, descripcion, precio, descuento, stock, activo] = line.split(',');
+
+          if (activo.trim().toLowerCase() !== 'sí') return;
+
           const div = document.createElement('div');
           div.className = 'producto';
           div.innerHTML = `
@@ -36,9 +40,9 @@
             <h3>${descripcion}</h3>
             <p>Precio: $${precio}</p>
             ${descuento ? `<p class="descuento">Descuento: ${descuento}</p>` : ''}
-            <button onclick="window.open('https://wa.me/5493813671352?text=${encodeURIComponent(descripcion)}','_blank')">
-              ${['Ramos','Plantas'].includes(categoria) ? 'Comprar' : 'Consultar'}
-            </button>`;
+            ${stock ? `<p>Stock: ${stock}</p>` : ''}
+            <button onclick="agregarAlCarrito('${descripcion}', ${precio})">Agregar al carrito</button>
+          `;
           cont.appendChild(div);
         });
       })
