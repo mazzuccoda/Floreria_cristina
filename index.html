@@ -101,7 +101,24 @@
     </div>
   </section>
 
-    
+
+    <!-- Formulario de contacto -->
+<div style="margin-top: 40px;">
+  <h3 style="text-align: center; color: #4c9a58; margin-bottom: 20px;">Dejanos tu mensaje</h3>
+  <form action="https://formsubmit.co/eleososatuc@gmail.com" method="POST" style="max-width: 600px; margin: 0 auto; display: flex; flex-direction: column; gap: 15px;">
+
+    <input type="text" name="name" placeholder="Tu nombre" required style="padding: 12px; border: 1px solid #ccc; border-radius: 6px;">
+    <input type="email" name="email" placeholder="Tu email" required style="padding: 12px; border: 1px solid #ccc; border-radius: 6px;">
+    <textarea name="message" rows="5" placeholder="Escribí tu mensaje..." required style="padding: 12px; border: 1px solid #ccc; border-radius: 6px;"></textarea>
+
+    <!-- Opcional: mensaje de éxito en redirección -->
+    <input type="hidden" name="_next" value="https://tu-sitio.com/gracias.html">
+    <button type="submit" style="background-color: #4caf50; color: white; border: none; padding: 12px; border-radius: 6px; font-size: 1rem; cursor: pointer;">
+      Enviar mensaje
+    </button>
+  </form>
+</div>
+
   </main>
 
   <!-- Footer -->
