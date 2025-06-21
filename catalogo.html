@@ -46,7 +46,6 @@
 
   <script src="script.js"></script>
   <script>
-    // Tu script de catalogo.html (el mismo de la respuesta anterior)
     let allProducts = [];
     let currentCategory = 'Todos';
 
@@ -59,7 +58,7 @@
       }
       productsToRender.forEach(product => {
         const div = document.createElement('div');
-        div.className = 'product-card'; // Clase cambiada para el nuevo estilo
+        div.className = 'product-card';
         div.innerHTML = `
           <div class="product-image-wrapper">
             <img src="${product.imgUrl}" alt="${product.descripcion}" loading="lazy" />
