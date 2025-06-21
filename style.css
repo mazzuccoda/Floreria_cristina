@@ -603,3 +603,71 @@ footer {
         display: none; /* Ocultar el título en pantallas muy pequeñas */
     }
 }
+/* ====== Mejora de catálogo en vista móvil ====== */
+
+/* Espacio general en mobile */
+body, main {
+  padding: 12px;
+}
+
+/* Estética general de cards */
+.card {
+  margin-bottom: 24px;
+  border-radius: 8px;
+  box-shadow: 0 2px 6px rgba(0,0,0,0.06);
+  overflow: hidden;
+  background: #fff;
+}
+
+/* Imagen de producto */
+.card img {
+  width: 100%;
+  height: auto;
+  display: block;
+  border-bottom: 1px solid #eee;
+}
+
+/* Título más elegante */
+.card h3 {
+  font-size: 1.1rem;
+  font-weight: 600;
+  margin: 12px;
+  color: #333;
+  text-align: center;
+}
+
+/* Precio más visible */
+.card p.price {
+  font-size: 1.2rem;
+  color: #4caf50;
+  font-weight: bold;
+  margin: 6px 0;
+  text-align: center;
+}
+
+/* Descuento */
+.card p.discount {
+  font-size: 0.9rem;
+  color: #d32f2f;
+  text-align: center;
+  margin-bottom: 8px;
+}
+
+/* Botón de compra */
+.card button {
+  background-color: #4caf50;
+  color: #fff;
+  border: none;
+  border-radius: 6px;
+  padding: 10px;
+  font-size: 0.95rem;
+  width: 90%;
+  margin: 0 auto 16px;
+  display: block;
+  cursor: pointer;
+  transition: background 0.3s;
+}
+
+.card button:hover {
+  background-color: #388e3c;
+}
