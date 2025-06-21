@@ -143,3 +143,20 @@ h1, h2, h3 {
     height: 120px;
   }
 }
+.carrito-btn {
+  background-color: #fbb034;
+  color: white;
+  padding: 12px 20px;
+  margin: 30px auto;
+  display: block;
+  border: none;
+  border-radius: 6px;
+  font-size: 1rem;
+  font-weight: bold;
+  cursor: pointer;
+  transition: background 0.3s ease;
+}
+
+.carrito-btn:hover {
+  background-color: #e39c00;
+}
