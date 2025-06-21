@@ -9,7 +9,7 @@
 </head>
 <body>
   <header>
-    <a href="index.html">← Inicio</a>
+    <a href="index.html" class="back-to-home">← Inicio</a>
     <img src="https://i.postimg.cc/RZ34GxdP/Logo-Crsitina.png" alt="Logo">
     <h1>Catálogo de Productos</h1>
     <div class="cart-summary" onclick="toggleCartModal()">
@@ -27,7 +27,7 @@
         <button id="filter-Fiestas" onclick="filterProducts('Fiestas')">Decoración para Fiestas</button>
     </div>
 
-    <div id="catalogo-container" class="catalogo"></div>
+    <div id="catalogo-container" class="product-grid"></div>
   </main>
 
   <footer>&copy; 2025 Florería y Vivero Cristina</footer>
@@ -46,33 +46,36 @@
 
   <script src="script.js"></script>
   <script>
-    let allProducts = []; // Para almacenar todos los productos cargados
-    let currentCategory = 'Todos'; // Para mantener el filtro activo
+    // Tu script de catalogo.html (el mismo de la respuesta anterior)
+    let allProducts = [];
+    let currentCategory = 'Todos';
 
-    // Función para renderizar productos en el catálogo
     function renderProducts(productsToRender) {
       const cont = document.getElementById('catalogo-container');
-      cont.innerHTML = ''; // Limpiar antes de añadir
+      cont.innerHTML = '';
       if (productsToRender.length === 0) {
           cont.innerHTML = '<p class="no-products-message">No se encontraron productos en esta categoría.</p>';
           return;
       }
       productsToRender.forEach(product => {
         const div = document.createElement('div');
-        div.className = 'producto';
+        div.className = 'product-card'; // Clase cambiada para el nuevo estilo
         div.innerHTML = `
-          <img src="${product.imgUrl}" alt="${product.descripcion}" loading="lazy" />
-          <h3>${product.descripcion}</h3>
-          <p>Precio: $${product.precio}</p>
-          ${product.descuento ? `<p class="descuento">Descuento: ${product.descuento}</p>` : ''}
-          <button onclick="addToCart(${JSON.stringify(product).replace(/'/g, "&apos;")})">
-            ${['Ramos','Plantas'].includes(product.categoria) ? 'Añadir al Carrito' : 'Consultar'}
-          </button>`;
+          <div class="product-image-wrapper">
+            <img src="${product.imgUrl}" alt="${product.descripcion}" loading="lazy" />
+          </div>
+          <div class="product-info">
+            <h3>${product.descripcion}</h3>
+            <p class="product-price"><span>$</span>${product.precio}</p>
+            ${product.descuento ? `<p class="product-discount">Descuento: ${product.descuento}</p>` : ''}
+            <button class="add-to-cart-btn" onclick="addToCart(${JSON.stringify(product).replace(/'/g, "&apos;")})">
+              ${['Ramos','Plantas'].includes(product.categoria) ? 'Añadir al Carrito' : 'Consultar'}
+            </button>
+          </div>`;
         cont.appendChild(div);
       });
     }
 
-    // Función para filtrar productos por categoría
     function filterProducts(category) {
         currentCategory = category;
         let filtered = [];
@@ -85,7 +88,6 @@
         updateFilterButtons(category);
     }
 
-    // Función para actualizar el estado visual de los botones de filtro
     function updateFilterButtons(activeCategory) {
         document.querySelectorAll('.category-filters button').forEach(button => {
             button.classList.remove('active');
@@ -96,7 +98,6 @@
         }
     }
 
-    // Cargar los datos al inicio y aplicar filtro si hay un parámetro en la URL
     document.addEventListener('DOMContentLoaded', () => {
         fetch('https://docs.google.com/spreadsheets/d/e/2PACX-1vSuWDiLqjNQr0EIVb2zuyzzKMzgn1MHeu6me8QSE2KejtocSuEbHFkY4tma_rDTcl-Ba3Z7TldQpeGQ/pub?output=csv')
         .then(res => res.text())
@@ -105,19 +106,18 @@
             allProducts = rows.map(line => {
                 if (!line) return null;
                 const [id, categoria, imgUrl, descripcion, precio, descuento] = line.split(',');
-                return { id, categoria, imgUrl, descripcion, precio: parseFloat(precio), descuento }; // Asegura que precio sea un número
-            }).filter(Boolean); // Eliminar posibles nulos
+                return { id, categoria, imgUrl, descripcion, precio: parseFloat(precio), descuento };
+            }).filter(Boolean);
 
-            // Obtener el parámetro de categoría de la URL
             const urlParams = new URLSearchParams(window.location.search);
             const categoryFromUrl = urlParams.get('categoria');
 
             if (categoryFromUrl && categoryFromUrl !== 'Todos') {
-                filterProducts(categoryFromUrl); // Filtrar por la categoría de la URL
+                filterProducts(categoryFromUrl);
             } else {
-                filterProducts('Todos'); // Mostrar todos por defecto
+                filterProducts('Todos');
             }
-            updateCartIcon(); // Actualizar el contador del carrito al cargar la página
+            updateCartIcon();
         })
         .catch(error => {
             console.error('Error al cargar los datos del catálogo:', error);
