@@ -6,6 +6,7 @@
   <title>Catálogo - Cristina</title>
   <link href="https://fonts.googleapis.com/css2?family=Quicksand:wght@400;600&display=swap" rel="stylesheet">
   <link rel="stylesheet" href="styles.css" />
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/PapaParse/5.3.2/papaparse.min.js"></script>
 </head>
 <body>
   <header>
@@ -23,10 +24,25 @@
   <script src="cart.js"></script>
   <script>
     fetch('https://docs.google.com/spreadsheets/d/e/2PACX-1vSuWDiLqjNQr0EIVb2zuyzzKMzgn1MHeu6me8QSE2KejtocSuEbHFkY4tma_rDTcl-Ba3Z7TldQpeGQ/pub?output=csv')
-      .then(res => res.text())
+      .then(response => response.text())
       .then(csv => {
-        const rows = csv.trim().split('\n').slice(1);
+        const parsed = Papa.parse(csv, { header: true });
         const cont = document.getElementById('catalogo-container');
-        con
+        cont.innerHTML = '';
 
+        parsed.data.forEach(row => {
+          const { CATEGORÍA, LINK_DE_FOTO, DESCRIPCION, PRECIO, DESCUENTO, STOCK, ACTIVO } = row;
+
+          if ((ACTIVO || '').trim().toLowerCase() !== 'sí') return;
+
+          const div = document.createElement('div');
+          div.className = 'producto';
+          div.innerHTML = `
+            <div class="producto-img">
+              <img src="${LINK_DE_FOTO}" alt="${DESCRIPCION}" />
+            </div>
+            <div class="producto-info">
+              <h3>${DESCRIPCION}</h3>
+              <p class="price">$${PRECIO}</p>
+              ${DESCUENTO ? `<p class="descuento">Descuento: ${DESC
 
