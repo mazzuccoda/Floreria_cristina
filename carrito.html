@@ -6,6 +6,7 @@
   <title>Carrito de Compras | Florería Cristina</title>
   <link rel="stylesheet" href="style.css" />
   <script src="https://kit.fontawesome.com/a076d05399.js" crossorigin="anonymous"></script>
+  <script src="script.js"></script>
 </head>
 <body>
 
@@ -13,7 +14,7 @@
     <a href="index.html" class="back-to-home">← Volver al inicio</a>
     <img src="logo.png" alt="Logo Florería Cristina" />
     <h1>Carrito de Compras</h1>
-    <div class="cart-summary" onclick="openCart()">
+    <div class="cart-summary">
       <i class="fas fa-shopping-cart"></i>
       <span id="cart-count">0</span>
     </div>
@@ -23,42 +24,32 @@
     <section>
       <h2>Tu carrito</h2>
       <p class="no-products-message">Tu carrito está vacío por ahora...</p>
+
+      <div id="cart-items" class="cart-items"></div>
+
+      <div class="cart-total">
+        <span>Total:</span>
+        <span id="cart-total-price">$0</span>
+      </div>
+
+      <div class="checkout-buttons">
+        <button class="btn-whatsapp" onclick="checkoutCart()">
+          <i class="fab fa-whatsapp"></i> Finalizar Compra por WhatsApp
+        </button>
+        <a href="https://link.mercadopago.com.ar/floresyplantascris" target="_blank" class="btn-mercadopago">
+          <i class="fas fa-credit-card"></i> Pagar con Mercado Pago
+        </a>
+        <button class="clear-cart-button" onclick="clearCart()">Vaciar Carrito</button>
+      </div>
+
     </section>
   </main>
 
-<!-- MODAL DEL CARRITO -->
-<div class="modal" id="cart-modal">
-  <div class="modal-content">
-    <span class="close-button" onclick="closeCart()">&times;</span>
-    <h2>Tu Carrito</h2>
-
-    <div id="cart-items" class="cart-items"></div>
-
-    <div class="cart-total">
-      <span>Total:</span>
-      <span id="cart-total-price">$0</span>
-    </div>
-
-    <div class="checkout-buttons">
-      <a href="https://wa.me/3814778577" target="_blank" class="btn-whatsapp">
-        <i class="fab fa-whatsapp"></i> Finalizar Compra por WhatsApp
-      </a>
-      <a href="https://link.mercadopago.com.ar/floresyplantascris" target="_blank" class="btn-mercadopago">
-        <i class="fas fa-credit-card"></i> Pagar con Mercado Pago
-      </a>
-      <button class="btn-vaciar" onclick="clearCart()">
-        <i class="fas fa-trash-alt"></i> Vaciar Carrito
-      </button>
-    </div>
-  </div>
-</div>
-
-  
-
   <footer>
-    © 2025 Florería Cristina - Yerba Buena, Tucumán | Diseño web por vos ✿
+    <p style="text-align: center; padding: 20px; color: #777; font-size: 0.9em;">
+      © 2024 Florería Cristina. Todos los derechos reservados.
+    </p>
   </footer>
 
-  <script src="carrito.js"></script>
 </body>
 </html>
