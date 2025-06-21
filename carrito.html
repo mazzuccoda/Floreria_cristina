@@ -1,0 +1,66 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+  <meta charset="UTF-8">
+  <title>Tu Carrito - Cristina</title>
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <link href="https://fonts.googleapis.com/css2?family=Quicksand:wght@400;600&display=swap" rel="stylesheet">
+  <link rel="stylesheet" href="styles.css">
+</head>
+<body>
+  <header>
+    <a href="catalogo.html">← Volver al catálogo</a>
+    <h1>Tu Carrito de Compras</h1>
+  </header>
+
+  <main>
+    <div id="carrito-lista" class="catalogo"></div>
+    <div id="carrito-resumen" style="text-align: center; margin-top: 20px;"></div>
+    <div style="text-align: center; margin-top: 20px;">
+      <button class="carrito-btn" onclick="finalizarCompra()">Finalizar Compra</button>
+      <button class="carrito-btn" onclick="vaciarCarrito()" style="background:#cc0000">Vaciar Carrito</button>
+    </div>
+  </main>
+
+  <footer>&copy; 2025 Florería y Vivero Cristina</footer>
+
+  <script>
+    const carrito = JSON.parse(localStorage.getItem('carrito')) || [];
+    const cont = document.getElementById('carrito-lista');
+    const resumen = document.getElementById('carrito-resumen');
+
+    if (carrito.length === 0) {
+      cont.innerHTML = "<p style='text-align:center;'>Tu carrito está vacío.</p>";
+      resumen.innerHTML = "";
+    } else {
+      carrito.forEach(p => {
+        const div = document.createElement('div');
+        div.className = 'producto';
+        div.innerHTML = `
+          <h3>${p.nombre}</h3>
+          <p>Precio: $${p.precio}</p>
+        `;
+        cont.appendChild(div);
+      });
+
+      const total = carrito.reduce((sum, p) => sum + parseFloat(p.precio), 0);
+      resumen.innerHTML = `<h2>Total: $${total}</h2>`;
+    }
+
+    function finalizarCompra() {
+      if (carrito.length === 0) return alert("Tu carrito está vacío.");
+      const resumen = carrito.map(p => `• ${p.nombre} - $${p.precio}`).join('\n');
+      const total = carrito.reduce((sum, p) => sum + parseFloat(p.precio), 0);
+      const mensaje = `Hola, quiero comprar:\n${resumen}\nTotal: $${total}`;
+      window.open(`https://wa.me/5493813671352?text=${encodeURIComponent(mensaje)}`, '_blank');
+    }
+
+    function vaciarCarrito() {
+      if (confirm("¿Seguro que querés vaciar tu carrito?")) {
+        localStorage.removeItem('carrito');
+        location.reload();
+      }
+    }
+  </script>
+</body>
+</html>
