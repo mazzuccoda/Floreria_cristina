@@ -3,9 +3,10 @@
 <head>
   <meta charset="UTF-8" />
   <meta name="viewport" content="width=device-width,initial-scale=1.0" />
-  <title>Catálogo - Cristina</title>
+  <title>Catálogo - Florería Cristina</title>
   <link href="https://fonts.googleapis.com/css2?family=Quicksand:wght@400;600&display=swap" rel="stylesheet">
   <link rel="stylesheet" href="style.css" />
+  <script src="script.js"></script>
 </head>
 <body>
   <header>
@@ -27,90 +28,37 @@
         <button onclick="filterProducts('Fiestas')">Decoración para Fiestas</button>
     </div>
 
-    <div id="catalogo-container" class="product-grid"></div>
+    <div id="catalogo-container" class="product-grid">
+        </div>
   </main>
 
-  <footer>&copy; 2025 Florería y Vivero Cristina</footer>
-
-  <!-- MODAL DEL CARRITO -->
-  <div id="cart-modal" class="modal">
+  <div class="modal" id="cart-modal">
     <div class="modal-content">
       <span class="close-button" onclick="toggleCartModal()">&times;</span>
       <h2>Tu Carrito</h2>
-      <div id="cart-items"></div>
-      <p class="cart-total">Total: $<span id="cart-total-amount">0</span></p>
 
-      <!-- WhatsApp -->
-      <button class="checkout-button" onclick="checkoutCart()">Finalizar Compra por WhatsApp</button>
+      <div id="cart-items" class="cart-items"></div>
 
-      <!-- Mercado Pago (simulado) -->
-      <a href="https://www.mercadopago.com.ar/checkout/v1/redirect?pref_id=simulado123456" class="checkout-button" target="_blank">
-        Pagar con Mercado Pago
-      </a>
+      <div class="cart-total">
+        <span>Total:</span>
+        <span id="cart-total-price">$0</span>
+      </div>
 
-      <button class="clear-cart-button" onclick="clearCart()">Vaciar Carrito</button>
+      <div class="checkout-buttons">
+        <a href="carrito.html" class="btn-whatsapp">
+          <i class="fab fa-whatsapp"></i> Finalizar Compra
+        </a>
+        <a href="carrito.html" class="btn-mercadopago">
+          <i class="fas fa-credit-card"></i> Pagar con Mercado Pago
+        </a>
+        <button class="clear-cart-button" onclick="clearCart()">Vaciar Carrito</button>
+      </div>
     </div>
   </div>
-
-  <script src="script.js"></script>
-  <script>
-    let allProducts = [];
-
-    function renderProducts(products) {
-      const cont = document.getElementById('catalogo-container');
-      cont.innerHTML = '';
-
-      if (products.length === 0) {
-        cont.innerHTML = '<p class="no-products-message">No se encontraron productos.</p>';
-        return;
-      }
-
-      products.forEach(product => {
-        const div = document.createElement('div');
-        div.className = 'product-card';
-        div.innerHTML = `
-          <div class="product-image-wrapper">
-            <img src="${product.imgUrl}" alt="${product.descripcion}" />
-          </div>
-          <div class="product-info">
-            <h3>${product.descripcion}</h3>
-            <p class="product-price"><span>$</span>${product.precio}</p>
-            ${product.descuento ? `<p class="product-discount">Descuento: ${product.descuento}</p>` : ''}
-            <button class="add-to-cart-btn" onclick='addToCart(${JSON.stringify(product)})'>
-              ${['Ramos','Plantas'].includes(product.categoria) ? 'Añadir al Carrito' : 'Consultar'}
-            </button>
-          </div>
-        `;
-        cont.appendChild(div);
-      });
-    }
-
-    function filterProducts(category) {
-      if (category === 'Todos') {
-        renderProducts(allProducts);
-      } else {
-        const filtered = allProducts.filter(p => p.categoria === category);
-        renderProducts(filtered);
-      }
-    }
-
-    document.addEventListener('DOMContentLoaded', () => {
-      fetch('https://docs.google.com/spreadsheets/d/e/2PACX-1vSuWDiLqjNQr0EIVb2zuyzzKMzgn1MHeu6me8QSE2KejtocSuEbHFkY4tma_rDTcl-Ba3Z7TldQpeGQ/pub?output=csv')
-        .then(res => res.text())
-        .then(csv => {
-          const rows = csv.trim().split('\n').slice(1);
-          allProducts = rows.map(line => {
-            const [id, categoria, imgUrl, descripcion, precio, descuento] = line.split(',');
-            return { id, categoria, imgUrl, descripcion, precio: parseFloat(precio), descuento };
-          });
-          filterProducts('Todos');
-        })
-        .catch(err => {
-          console.error('Error al cargar productos', err);
-          document.getElementById('catalogo-container').innerHTML = '<p class="error-message">Error al cargar productos.</p>';
-        });
-    });
-  </script>
+  <footer>
+    <p style="text-align: center; padding: 20px; color: #777; font-size: 0.9em;">
+      © 2024 Florería Cristina. Todos los derechos reservados.
+    </p>
+  </footer>
 </body>
 </html>
-
