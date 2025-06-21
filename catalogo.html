@@ -46,19 +46,20 @@
 
   <script src="script.js"></script>
   <script>
-    let allProducts = [];
-    let currentCategory = 'Todos';
+    let allProducts = []; // Para almacenar todos los productos cargados
+    let currentCategory = 'Todos'; // Para mantener el filtro activo
 
+    // Función para renderizar productos en el catálogo
     function renderProducts(productsToRender) {
       const cont = document.getElementById('catalogo-container');
-      cont.innerHTML = '';
+      cont.innerHTML = ''; // Limpiar antes de añadir
       if (productsToRender.length === 0) {
           cont.innerHTML = '<p class="no-products-message">No se encontraron productos en esta categoría.</p>';
           return;
       }
       productsToRender.forEach(product => {
         const div = document.createElement('div');
-        div.className = 'product-card';
+        div.className = 'product-card'; // Clase cambiada para el nuevo estilo
         div.innerHTML = `
           <div class="product-image-wrapper">
             <img src="${product.imgUrl}" alt="${product.descripcion}" loading="lazy" />
@@ -75,6 +76,7 @@
       });
     }
 
+    // Función para filtrar productos por categoría
     function filterProducts(category) {
         currentCategory = category;
         let filtered = [];
@@ -87,6 +89,7 @@
         updateFilterButtons(category);
     }
 
+    // Función para actualizar el estado visual de los botones de filtro
     function updateFilterButtons(activeCategory) {
         document.querySelectorAll('.category-filters button').forEach(button => {
             button.classList.remove('active');
@@ -97,6 +100,7 @@
         }
     }
 
+    // Cargar los datos al inicio y aplicar filtro si hay un parámetro en la URL
     document.addEventListener('DOMContentLoaded', () => {
         fetch('https://docs.google.com/spreadsheets/d/e/2PACX-1vSuWDiLqjNQr0EIVb2zuyzzKMzgn1MHeu6me8QSE2KejtocSuEbHFkY4tma_rDTcl-Ba3Z7TldQpeGQ/pub?output=csv')
         .then(res => res.text())
@@ -105,18 +109,19 @@
             allProducts = rows.map(line => {
                 if (!line) return null;
                 const [id, categoria, imgUrl, descripcion, precio, descuento] = line.split(',');
-                return { id, categoria, imgUrl, descripcion, precio: parseFloat(precio), descuento };
-            }).filter(Boolean);
+                return { id, categoria, imgUrl, descripcion, precio: parseFloat(precio), descuento }; // Asegura que precio sea un número
+            }).filter(Boolean); // Eliminar posibles nulos
 
+            // Obtener el parámetro de categoría de la URL
             const urlParams = new URLSearchParams(window.location.search);
             const categoryFromUrl = urlParams.get('categoria');
 
             if (categoryFromUrl && categoryFromUrl !== 'Todos') {
-                filterProducts(categoryFromUrl);
+                filterProducts(categoryFromUrl); // Filtrar por la categoría de la URL
             } else {
-                filterProducts('Todos');
+                filterProducts('Todos'); // Mostrar todos por defecto
             }
-            updateCartIcon();
+            updateCartIcon(); // Actualizar el contador del carrito al cargar la página
         })
         .catch(error => {
             console.error('Error al cargar los datos del catálogo:', error);
