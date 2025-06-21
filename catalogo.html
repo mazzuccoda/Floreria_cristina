@@ -3,7 +3,7 @@
 <head>
   <meta charset="UTF-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-  <title>Catálogo - Florería Cristina</title>
+  <title>Catálogo - Cristina</title>
   <link href="https://fonts.googleapis.com/css2?family=Quicksand:wght@400;600&display=swap" rel="stylesheet">
   <link rel="stylesheet" href="style.css" />
 </head>
@@ -21,26 +21,28 @@
 
   <script>
     fetch('https://docs.google.com/spreadsheets/d/e/2PACX-1vSuWDiLqjNQr0EIVb2zuyzzKMzgn1MHeu6me8QSE2KejtocSuEbHFkY4tma_rDTcl-Ba3Z7TldQpeGQ/pub?output=csv')
-      .then(res => res.text())
+      .then(r => r.text())
       .then(csv => {
-        const rows = csv.split('\n').slice(1);
-        let html = '';
-        rows.forEach(row => {
-          if (!row.trim()) return;
-          const [id, categoria, link_html, descripcion, precio, descuento] = row.split(',');
-          html += `
-            <div class="producto">
-              ${link_html}
-              <h3>${descripcion}</h3>
-              <p>Precio: $${precio}</p>
-              ${descuento ? `<p class="descuento">Descuento: ${descuento}</p>` : ''}
-              <button onclick="window.open('https://wa.me/5493813671352?text=${encodeURIComponent(descripcion+' - Quiero más info')}', '_blank')">
-                ${['Ramos','Plantas'].includes(categoria) ? 'Comprar' : 'Consultar'}
-              </button>
-            </div>`;
+        const rows = csv.trim().split('\n').slice(1);
+        const cont = document.getElementById('catalogo-container');
+        cont.innerHTML = '';
+        rows.forEach(line => {
+          const [id, categoria, imgUrl, descripcion, precio, descuento] = line.split(',');
+          const div = document.createElement('div');
+          div.className = 'producto';
+          div.innerHTML = `
+            <img src="${imgUrl}" alt="${descripcion}" />
+            <h3>${descripcion}</h3>
+            <p>Precio: $${precio}</p>
+            ${descuento ? `<p class="descuento">Descuento: ${descuento}</p>` : ''}
+            <button onclick="window.open('https://wa.me/5493813671352?text=${encodeURIComponent(descripcion)}','_blank')">
+              ${['Ramos','Plantas'].includes(categoria) ? 'Comprar' : 'Consultar'}
+            </button>`;
+          cont.appendChild(div);
         });
-        document.getElementById('catalogo-container').innerHTML = html;
-      });
+      })
+      .catch(console.error);
   </script>
 </body>
 </html>
+
