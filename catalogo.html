@@ -5,44 +5,126 @@
   <meta name="viewport" content="width=device-width,initial-scale=1.0" />
   <title>Catálogo - Cristina</title>
   <link href="https://fonts.googleapis.com/css2?family=Quicksand:wght@400;600&display=swap" rel="stylesheet">
-  <link rel="stylesheet" href="styles.css" />
-  <script src="https://cdnjs.cloudflare.com/ajax/libs/PapaParse/5.3.2/papaparse.min.js"></script>
+  <link rel="stylesheet" href="style.css" />
 </head>
 <body>
   <header>
     <a href="index.html">← Inicio</a>
+    <img src="https://i.postimg.cc/RZ34GxdP/Logo-Crsitina.png" alt="Logo">
     <h1>Catálogo de Productos</h1>
+    <div class="cart-summary" onclick="toggleCartModal()">
+        🛒 <span id="cart-count">0</span>
+    </div>
   </header>
 
   <main>
+    <div class="category-filters">
+        <button id="filter-all" onclick="filterProducts('Todos')">Todos</button>
+        <button id="filter-Ramos" onclick="filterProducts('Ramos')">Ramos de Flores</button>
+        <button id="filter-Plantas" onclick="filterProducts('Plantas')">Plantas</button>
+        <button id="filter-Novias" onclick="filterProducts('Novias')">Ramos de Novia</button>
+        <button id="filter-Iglesias" onclick="filterProducts('Iglesias')">Arreglos para Iglesias</button>
+        <button id="filter-Fiestas" onclick="filterProducts('Fiestas')">Decoración para Fiestas</button>
+    </div>
+
     <div id="catalogo-container" class="catalogo"></div>
-    <button class="carrito-btn" onclick="verCarrito()">🛒 Ver carrito</button>
   </main>
 
   <footer>&copy; 2025 Florería y Vivero Cristina</footer>
 
-  <script src="cart.js"></script>
+  <div id="cart-modal" class="modal">
+    <div class="modal-content">
+      <span class="close-button" onclick="toggleCartModal()">&times;</span>
+      <h2>Tu Carrito</h2>
+      <div id="cart-items">
+        </div>
+      <p class="cart-total">Total: $<span id="cart-total-amount">0</span></p>
+      <button class="checkout-button" onclick="checkoutCart()">Finalizar Compra por WhatsApp</button>
+      <button class="clear-cart-button" onclick="clearCart()">Vaciar Carrito</button>
+    </div>
+  </div>
+
+  <script src="script.js"></script>
   <script>
-    fetch('https://docs.google.com/spreadsheets/d/e/2PACX-1vSuWDiLqjNQr0EIVb2zuyzzKMzgn1MHeu6me8QSE2KejtocSuEbHFkY4tma_rDTcl-Ba3Z7TldQpeGQ/pub?output=csv')
-      .then(response => response.text())
-      .then(csv => {
-        const parsed = Papa.parse(csv, { header: true });
-        const cont = document.getElementById('catalogo-container');
-        cont.innerHTML = '';
+    let allProducts = []; // Para almacenar todos los productos cargados
+    let currentCategory = 'Todos'; // Para mantener el filtro activo
 
-        parsed.data.forEach(row => {
-          const { CATEGORÍA, LINK_DE_FOTO, DESCRIPCION, PRECIO, DESCUENTO, STOCK, ACTIVO } = row;
+    // Función para renderizar productos en el catálogo
+    function renderProducts(productsToRender) {
+      const cont = document.getElementById('catalogo-container');
+      cont.innerHTML = ''; // Limpiar antes de añadir
+      if (productsToRender.length === 0) {
+          cont.innerHTML = '<p class="no-products-message">No se encontraron productos en esta categoría.</p>';
+          return;
+      }
+      productsToRender.forEach(product => {
+        const div = document.createElement('div');
+        div.className = 'producto';
+        div.innerHTML = `
+          <img src="${product.imgUrl}" alt="${product.descripcion}" loading="lazy" />
+          <h3>${product.descripcion}</h3>
+          <p>Precio: $${product.precio}</p>
+          ${product.descuento ? `<p class="descuento">Descuento: ${product.descuento}</p>` : ''}
+          <button onclick="addToCart(${JSON.stringify(product).replace(/'/g, "&apos;")})">
+            ${['Ramos','Plantas'].includes(product.categoria) ? 'Añadir al Carrito' : 'Consultar'}
+          </button>`;
+        cont.appendChild(div);
+      });
+    }
 
-          if ((ACTIVO || '').trim().toLowerCase() !== 'sí') return;
+    // Función para filtrar productos por categoría
+    function filterProducts(category) {
+        currentCategory = category;
+        let filtered = [];
+        if (category === 'Todos') {
+            filtered = allProducts;
+        } else {
+            filtered = allProducts.filter(p => p.categoria === category);
+        }
+        renderProducts(filtered);
+        updateFilterButtons(category);
+    }
 
-          const div = document.createElement('div');
-          div.className = 'producto';
-          div.innerHTML = `
-            <div class="producto-img">
-              <img src="${LINK_DE_FOTO}" alt="${DESCRIPCION}" />
-            </div>
-            <div class="producto-info">
-              <h3>${DESCRIPCION}</h3>
-              <p class="price">$${PRECIO}</p>
-              ${DESCUENTO ? `<p class="descuento">Descuento: ${DESC
+    // Función para actualizar el estado visual de los botones de filtro
+    function updateFilterButtons(activeCategory) {
+        document.querySelectorAll('.category-filters button').forEach(button => {
+            button.classList.remove('active');
+        });
+        const activeButton = document.getElementById(`filter-${activeCategory}`);
+        if (activeButton) {
+            activeButton.classList.add('active');
+        }
+    }
 
+    // Cargar los datos al inicio y aplicar filtro si hay un parámetro en la URL
+    document.addEventListener('DOMContentLoaded', () => {
+        fetch('https://docs.google.com/spreadsheets/d/e/2PACX-1vSuWDiLqjNQr0EIVb2zuyzzKMzgn1MHeu6me8QSE2KejtocSuEbHFkY4tma_rDTcl-Ba3Z7TldQpeGQ/pub?output=csv')
+        .then(res => res.text())
+        .then(csv => {
+            const rows = csv.trim().split('\n').slice(1);
+            allProducts = rows.map(line => {
+                if (!line) return null;
+                const [id, categoria, imgUrl, descripcion, precio, descuento] = line.split(',');
+                return { id, categoria, imgUrl, descripcion, precio: parseFloat(precio), descuento }; // Asegura que precio sea un número
+            }).filter(Boolean); // Eliminar posibles nulos
+
+            // Obtener el parámetro de categoría de la URL
+            const urlParams = new URLSearchParams(window.location.search);
+            const categoryFromUrl = urlParams.get('categoria');
+
+            if (categoryFromUrl && categoryFromUrl !== 'Todos') {
+                filterProducts(categoryFromUrl); // Filtrar por la categoría de la URL
+            } else {
+                filterProducts('Todos'); // Mostrar todos por defecto
+            }
+            updateCartIcon(); // Actualizar el contador del carrito al cargar la página
+        })
+        .catch(error => {
+            console.error('Error al cargar los datos del catálogo:', error);
+            const cont = document.getElementById('catalogo-container');
+            cont.innerHTML = '<p class="error-message">Error al cargar los productos. Intenta de nuevo más tarde.</p>';
+        });
+    });
+  </script>
+</body>
+</html>
