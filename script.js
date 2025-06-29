@@ -12,47 +12,54 @@ document.addEventListener('DOMContentLoaded', async () => {
   actualizarContadorCarrito();
 });
 
-// Cargar CSV desde Google Sheets (vía proxy JSON)
 async function cargarDatos() {
   const res = await fetch(SHEET_URL);
   const data = await res.json();
   return data.filter(p => p['ACTIVO'] === '1');
 }
 
-// Detectar tipos de flor dinámicamente desde encabezados
 function detectarTiposDeFlor(productos) {
   const ejemplo = productos[0];
   const columnasFijas = ['id Producto', 'CATEGORÍA', 'LINK_DE_FOTO', 'NOMBRE', 'DESCRIPCION', 'PRECIO', 'DESCUENTO', 'STOCK', 'ACTIVO'];
   tiposDeFlor = Object.keys(ejemplo).filter(k => !columnasFijas.includes(k));
 }
 
-// Renderizar checkboxes para cada tipo de flor
 function renderFiltrosDeFlor() {
-  const contenedor = document.createElement('div');
-  contenedor.className = 'flower-filters';
-  contenedor.innerHTML = '<h3>Tipo de flor</h3>';
+  // Crear contenedor si no existe
+  let lateral = document.getElementById('filtros-laterales');
+  if (!lateral) {
+    lateral = document.createElement('div');
+    lateral.id = 'filtros-laterales';
+    lateral.style.padding = '20px';
+    lateral.style.maxWidth = '220px';
+    lateral.style.float = 'left';
+    lateral.style.marginRight = '20px';
+    lateral.style.background = '#f4f4f4';
+    lateral.style.borderRadius = '8px';
+    lateral.style.fontSize = '0.95rem';
+    lateral.style.color = '#333';
+    document.querySelector('main').prepend(lateral);
+  }
+
+  const titulo = document.createElement('h3');
+  titulo.textContent = 'Tipo de flor';
+  titulo.style.color = '#4c9a58';
+  lateral.appendChild(titulo);
 
   tiposDeFlor.forEach(flor => {
     const label = document.createElement('label');
+    label.style.display = 'block';
+    label.style.marginBottom = '8px';
     label.innerHTML = `<input type="checkbox" value="${flor}"> ${flor}`;
     label.querySelector('input').addEventListener('change', (e) => {
       const { value, checked } = e.target;
-      if (checked) {
-        floresSeleccionadas.add(value);
-      } else {
-        floresSeleccionadas.delete(value);
-      }
+      checked ? floresSeleccionadas.add(value) : floresSeleccionadas.delete(value);
       renderProductos();
     });
-    contenedor.appendChild(label);
+    lateral.appendChild(label);
   });
-
-  // Insertar antes del catálogo
-  const main = document.querySelector('main');
-  main.insertBefore(contenedor, document.getElementById('catalogo-container'));
 }
 
-// Filtrar y renderizar productos
 function renderProductos() {
   const contenedor = document.getElementById('catalogo-container');
   contenedor.innerHTML = '';
@@ -76,19 +83,18 @@ function renderProductos() {
       <img src="${p['LINK_DE_FOTO']}" alt="${p['NOMBRE']}">
       <h3>${p['NOMBRE']}</h3>
       <p>$${parseFloat(p['PRECIO']).toFixed(2)}</p>
-      <button onclick="agregarAlCarrito('${p['id Producto']}', '${p['NOMBRE']}', ${parseFloat(p['PRECIO'])})">Agregar</button>
+      <button onclick="agregarAlCarrito('${p['id Producto']}', '${p['NOMBRE']}', ${parseFloat(p['PRECIO'])})">Añadir al Carrito</button>
     `;
     contenedor.appendChild(card);
   });
 }
 
-// Filtrar por categoría
 function filterProducts(categoria) {
   categoriaSeleccionada = categoria;
   renderProductos();
 }
 
-// === Carrito ===
+// Carrito básico
 function agregarAlCarrito(id, nombre, precio) {
   const carrito = JSON.parse(localStorage.getItem('carrito') || '[]');
   const existente = carrito.find(p => p.id === id);
