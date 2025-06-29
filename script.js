@@ -10,6 +10,9 @@ document.addEventListener('DOMContentLoaded', async () => {
   renderFiltrosDeFlor();
   renderProductos();
   actualizarContadorCarrito();
+  if (document.getElementById('cart-items')) {
+    renderCartItems();
+  }
 });
 
 async function cargarDatos() {
@@ -105,6 +108,9 @@ function agregarAlCarrito(id, nombre, precio) {
   }
   localStorage.setItem('carrito', JSON.stringify(carrito));
   actualizarContadorCarrito();
+  if (document.getElementById('cart-items')) {
+    renderCartItems();
+  }
 }
 
 function actualizarContadorCarrito() {
@@ -113,12 +119,69 @@ function actualizarContadorCarrito() {
   document.getElementById('cart-count').textContent = total;
 }
 
+function renderCartItems() {
+  const contenedor = document.getElementById('cart-items');
+  if (!contenedor) return;
+
+  const carrito = JSON.parse(localStorage.getItem('carrito') || '[]');
+  contenedor.innerHTML = '';
+
+  if (carrito.length === 0) {
+    contenedor.innerHTML = '<p>Tu carrito está vacío por ahora...</p>';
+  } else {
+    carrito.forEach(item => {
+      const div = document.createElement('div');
+      div.className = 'cart-item';
+      div.innerHTML = `
+        <h4>${item.nombre}</h4>
+        <p>Cantidad: ${item.cantidad}</p>
+        <p>$${(item.precio * item.cantidad).toFixed(2)}</p>
+      `;
+      contenedor.appendChild(div);
+    });
+  }
+
+  updateCartTotal();
+}
+
+function updateCartTotal() {
+  const totalEl = document.getElementById('cart-total-price');
+  if (!totalEl) return;
+
+  const carrito = JSON.parse(localStorage.getItem('carrito') || '[]');
+  const total = carrito.reduce((sum, p) => sum + p.precio * p.cantidad, 0);
+  totalEl.textContent = '$' + total.toFixed(2);
+}
+
 function toggleCartModal() {
-  document.getElementById('cart-modal').classList.toggle('visible');
+  const modal = document.getElementById('cart-modal');
+  if (modal) {
+    modal.classList.toggle('visible');
+    renderCartItems();
+  }
 }
 
 function clearCart() {
   localStorage.removeItem('carrito');
   actualizarContadorCarrito();
-  toggleCartModal();
+  renderCartItems();
+  const modal = document.getElementById('cart-modal');
+  if (modal) {
+    modal.classList.remove('visible');
+  }
+}
+
+function checkoutCart() {
+  const carrito = JSON.parse(localStorage.getItem('carrito') || '[]');
+  if (carrito.length === 0) return;
+
+  let mensaje = 'Hola! Quisiera realizar el siguiente pedido:%0A';
+  carrito.forEach(item => {
+    mensaje += `${item.cantidad} x ${item.nombre} - $${(item.precio * item.cantidad).toFixed(2)}%0A`;
+  });
+  const total = carrito.reduce((sum, p) => sum + p.precio * p.cantidad, 0);
+  mensaje += `Total: $${total.toFixed(2)}`;
+
+  const url = `https://wa.me/5493814778577?text=${encodeURIComponent(mensaje)}`;
+  window.open(url, '_blank');
 }
