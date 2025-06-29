@@ -19,17 +19,26 @@
   </header>
 
   <main>
-    <div class="category-filters">
-        <button onclick="filterProducts('Todos')">Todos</button>
-        <button onclick="filterProducts('Ramos')">Ramos de Flores</button>
-        <button onclick="filterProducts('Plantas')">Plantas</button>
-        <button onclick="filterProducts('Novias')">Ramos de Novia</button>
-        <button onclick="filterProducts('Iglesias')">Arreglos para Iglesias</button>
-        <button onclick="filterProducts('Fiestas')">Decoración para Fiestas</button>
-    </div>
-
-    <div id="catalogo-container" class="product-grid">
+    <div class="main-content-wrapper">
+      <div class="filter-sidebar">
+        <h3>Categorías</h3>
+        <div class="category-filters">
+            <button onclick="filterProducts('Todos')">Todos</button>
+            <button onclick="filterProducts('Ramos')">Ramos de Flores</button>
+            <button onclick="filterProducts('Plantas')">Plantas</button>
+            <button onclick="filterProducts('Novias')">Ramos de Novia</button>
+            <button onclick="filterProducts('Iglesias')">Arreglos para Iglesias</button>
+            <button onclick="filterProducts('Fiestas')">Decoración para Fiestas</button>
         </div>
+
+        <div id="flower-type-filters" class="flower-type-filters">
+            <h3>Tipo de Flor</h3>
+            </div>
+      </div>
+
+      <div id="catalogo-container" class="product-grid">
+          </div>
+    </div>
   </main>
 
   <div class="modal" id="cart-modal">
@@ -55,6 +64,15 @@
       </div>
     </div>
   </div>
+
+  <div class="modal" id="product-detail-modal">
+    <div class="modal-content product-detail-content">
+      <span class="close-button" onclick="toggleProductDetailModal()">&times;</span>
+      <div id="product-detail-content">
+        </div>
+    </div>
+  </div>
+
   <footer>
     <p style="text-align: center; padding: 20px; color: #777; font-size: 0.9em;">
       © 2024 Florería Cristina. Todos los derechos reservados.
