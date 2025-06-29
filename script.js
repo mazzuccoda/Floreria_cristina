@@ -25,26 +25,19 @@ function detectarTiposDeFlor(productos) {
 }
 
 function renderFiltrosDeFlor() {
-  // Crear contenedor si no existe
-  let lateral = document.getElementById('filtros-laterales');
-  if (!lateral) {
-    lateral = document.createElement('div');
-    lateral.id = 'filtros-laterales';
-    lateral.style.padding = '20px';
-    lateral.style.maxWidth = '220px';
-    lateral.style.float = 'left';
-    lateral.style.marginRight = '20px';
-    lateral.style.background = '#f4f4f4';
-    lateral.style.borderRadius = '8px';
-    lateral.style.fontSize = '0.95rem';
-    lateral.style.color = '#333';
-    document.querySelector('main').prepend(lateral);
-  }
+  const filtros = document.createElement('div');
+  filtros.id = 'filtros-laterales';
+  filtros.style.padding = '20px';
+  filtros.style.maxWidth = '240px';
+  filtros.style.marginLeft = '30px';
+  filtros.style.background = '#f9f9f9';
+  filtros.style.border = '1px solid #ddd';
+  filtros.style.borderRadius = '8px';
 
   const titulo = document.createElement('h3');
-  titulo.textContent = 'Tipo de flor';
-  titulo.style.color = '#4c9a58';
-  lateral.appendChild(titulo);
+  titulo.textContent = 'Filtrar por flor';
+  titulo.style.marginTop = '0';
+  filtros.appendChild(titulo);
 
   tiposDeFlor.forEach(flor => {
     const label = document.createElement('label');
@@ -56,8 +49,11 @@ function renderFiltrosDeFlor() {
       checked ? floresSeleccionadas.add(value) : floresSeleccionadas.delete(value);
       renderProductos();
     });
-    lateral.appendChild(label);
+    filtros.appendChild(label);
   });
+
+  const main = document.querySelector('main');
+  main.insertBefore(filtros, document.getElementById('catalogo-container'));
 }
 
 function renderProductos() {
@@ -67,7 +63,7 @@ function renderProductos() {
   const filtrados = productos.filter(p => {
     const coincideCategoria = categoriaSeleccionada === 'Todos' || p['CATEGORÍA'] === categoriaSeleccionada;
     const coincideFlor = floresSeleccionadas.size === 0 ||
-      [...floresSeleccionadas].some(f => p[f] === '1');
+      [...floresSeleccionadas].some(f => (p[f] + '').trim() === '1');
     return coincideCategoria && coincideFlor;
   });
 
@@ -83,7 +79,7 @@ function renderProductos() {
       <img src="${p['LINK_DE_FOTO']}" alt="${p['NOMBRE']}">
       <h3>${p['NOMBRE']}</h3>
       <p>$${parseFloat(p['PRECIO']).toFixed(2)}</p>
-      <button onclick="agregarAlCarrito('${p['id Producto']}', '${p['NOMBRE']}', ${parseFloat(p['PRECIO'])})">Añadir al Carrito</button>
+      <button onclick="agregarAlCarrito('${p['id Producto']}', '${p['NOMBRE']}', ${parseFloat(p['PRECIO'])})">Agregar</button>
     `;
     contenedor.appendChild(card);
   });
@@ -94,7 +90,6 @@ function filterProducts(categoria) {
   renderProductos();
 }
 
-// Carrito básico
 function agregarAlCarrito(id, nombre, precio) {
   const carrito = JSON.parse(localStorage.getItem('carrito') || '[]');
   const existente = carrito.find(p => p.id === id);
