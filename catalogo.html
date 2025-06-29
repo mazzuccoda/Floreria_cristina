@@ -2,7 +2,6 @@
 <html lang="es">
 <head>
   <meta charset="UTF-8">
-  <meta name="viewport" content="width=device-width, initial-scale=1.0">
   <title>Catálogo de Productos - Florería Cristina</title>
   <link rel="stylesheet" href="style.css">
   <style>
@@ -109,7 +108,6 @@
       cursor: pointer;
     }
 
-    /* Modal Carrito */
     .modal {
       display: none;
       position: fixed;
@@ -160,20 +158,18 @@
     <div class="cart" onclick="toggleCartModal()">🛒 <span id="cart-count">0</span></div>
   </header>
 
+  <!-- Botones de categoría corregidos -->
   <nav class="categorias">
     <button onclick="filterProducts('Todos')">Todos</button>
-    <button onclick="filterProducts('Ramos de Flores')">Ramos de Flores</button>
+    <button onclick="filterProducts('Ramos')">Ramos</button>
     <button onclick="filterProducts('Plantas')">Plantas</button>
-    <button onclick="filterProducts('Ramos de Novia')">Ramos de Novia</button>
-    <button onclick="filterProducts('Arreglos para Iglesias')">Arreglos para Iglesias</button>
-    <button onclick="filterProducts('Decoración para Fiestas')">Decoración para Fiestas</button>
+    <button onclick="filterProducts('Novias')">Novias</button>
+    <button onclick="filterProducts('Iglesias')">Iglesias</button>
+    <button onclick="filterProducts('Arreglos')">Arreglos</button>
   </nav>
 
   <main>
-    <!-- Aquí se insertan los filtros lateralmente -->
-    <!-- Filtro lateral de flores se inyecta por script.js -->
-
-    <!-- Catálogo -->
+    <!-- Los filtros por tipo de flor se inyectan aquí -->
     <div id="catalogo-container"></div>
   </main>
 
