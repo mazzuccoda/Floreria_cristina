@@ -179,20 +179,17 @@
     </div>
   </div>
 
-  <script src="https://cdnjs.cloudflare.com/ajax/libs/PapaParse/5.3.2/papaparse.min.js"></script>
   <script>
-    const SHEET_URL = 'https://docs.google.com/spreadsheets/d/1cUDaB8ZKBL-hzG7dYJFUpx7E4roImbej6MVW7F-15LA/export?format=csv';
+    const SHEET_URL = 'https://opensheet.elk.sh/1cUDaB8ZKBL-hzG7dYJFUpx7E4roImbej6MVW7F-15LA/Hoja1';
     let products = [], flowerTypes = [], selectedFlowers = new Set();
 
     async function fetchProducts() {
       try {
         const res = await fetch(SHEET_URL);
-        const csv = await res.text();
-        const parsed = Papa.parse(csv, { header: true }).data;
+        const parsed = await res.json();
 
         const fixedCols = ['id Producto', 'CATEGORÍA', 'LINK_DE_FOTO', 'NOMBRE', 'DESCRIPCION', 'PRECIO', 'DESCUENTO', 'STOCK', 'ACTIVO'];
-        const sample = parsed[0];
-        flowerTypes = Object.keys(sample).filter(k => !fixedCols.includes(k));
+        flowerTypes = Object.keys(parsed[0]).filter(k => !fixedCols.includes(k));
         products = parsed.filter(p => p['NOMBRE'] && p['ACTIVO'] === '1');
 
         renderFilters();
@@ -268,4 +265,3 @@
   </script>
 </body>
 </html>
-
