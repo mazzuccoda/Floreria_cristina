@@ -1,188 +1,64 @@
 <!DOCTYPE html>
 <html lang="es">
 <head>
-  <meta charset="UTF-8">
-  <title>Catálogo de Productos - Florería Cristina</title>
-  <link rel="stylesheet" href="style.css">
-  <style>
-    body {
-      font-family: sans-serif;
-      margin: 0;
-      background: #fdfdfd;
-    }
-
-    header {
-      display: flex;
-      align-items: center;
-      justify-content: space-between;
-      padding: 15px 30px;
-      background: #fff;
-      box-shadow: 0 1px 4px rgba(0,0,0,0.1);
-    }
-
-    .logo {
-      font-size: 18px;
-      color: #4c9a58;
-      text-decoration: none;
-    }
-
-    h1 {
-      margin: 0;
-      font-size: 22px;
-      color: #333;
-    }
-
-    .cart {
-      cursor: pointer;
-      font-size: 20px;
-    }
-
-    .categorias {
-      text-align: center;
-      padding: 15px;
-      border-bottom: 1px solid #eee;
-    }
-
-    .categorias button {
-      margin: 0 8px;
-      padding: 8px 16px;
-      border: none;
-      background: transparent;
-      cursor: pointer;
-      font-size: 15px;
-      color: #333;
-    }
-
-    .categorias button:hover {
-      color: #4c9a58;
-    }
-
-    main {
-      display: flex;
-      gap: 20px;
-      padding: 20px 30px;
-      align-items: flex-start;
-    }
-
-    #catalogo-container {
-      display: grid;
-      gap: 20px;
-      grid-template-columns: repeat(auto-fill, minmax(200px, 1fr));
-      flex-grow: 1;
-    }
-
-    .product-card {
-      background: white;
-      border: 1px solid #ddd;
-      border-radius: 8px;
-      padding: 15px;
-      text-align: center;
-      box-shadow: 0 2px 5px rgba(0,0,0,0.05);
-    }
-
-    .product-card img {
-      width: 100%;
-      height: 180px;
-      object-fit: cover;
-      border-radius: 6px;
-      margin-bottom: 10px;
-    }
-
-    .product-card h3 {
-      margin: 10px 0 5px;
-      font-size: 16px;
-    }
-
-    .product-card p {
-      color: #4c9a58;
-      font-weight: bold;
-      margin: 0 0 10px;
-    }
-
-    .product-card button {
-      padding: 8px 14px;
-      border: none;
-      background: #4c9a58;
-      color: white;
-      border-radius: 6px;
-      cursor: pointer;
-    }
-
-    .modal {
-      display: none;
-      position: fixed;
-      top: 0; left: 0; width: 100%; height: 100%;
-      background: rgba(0,0,0,0.5);
-      justify-content: center;
-      align-items: center;
-      z-index: 999;
-    }
-
-    .modal.visible {
-      display: flex;
-    }
-
-    .modal-content {
-      background: white;
-      padding: 20px;
-      border-radius: 8px;
-      width: 90%;
-      max-width: 500px;
-      text-align: center;
-      position: relative;
-    }
-
-    .close-btn {
-      position: absolute;
-      top: 10px;
-      right: 15px;
-      font-size: 20px;
-      cursor: pointer;
-    }
-
-    #filtros-laterales label {
-      display: block;
-      margin-bottom: 8px;
-    }
-
-    #filtros-laterales h3 {
-      margin-top: 0;
-    }
-  </style>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width,initial-scale=1.0" />
+  <title>Catálogo - Florería Cristina</title>
+  <link href="https://fonts.googleapis.com/css2?family=Quicksand:wght@400;600&display=swap" rel="stylesheet">
+  <link rel="stylesheet" href="style.css" />
+  <script src="script.js"></script>
 </head>
 <body>
-
   <header>
-    <a href="index.html" class="logo">← Inicio</a>
+    <a href="index.html" class="back-to-home">← Inicio</a>
+    <img src="https://i.postimg.cc/RZ34GxdP/Logo-Crsitina.png" alt="Logo">
     <h1>Catálogo de Productos</h1>
-    <div class="cart" onclick="toggleCartModal()">🛒 <span id="cart-count">0</span></div>
+    <div class="cart-summary" onclick="toggleCartModal()">
+        🛒 <span id="cart-count">0</span>
+    </div>
   </header>
 
-  <!-- Botones de categoría corregidos -->
-  <nav class="categorias">
-    <button onclick="filterProducts('Todos')">Todos</button>
-    <button onclick="filterProducts('Ramos')">Ramos</button>
-    <button onclick="filterProducts('Plantas')">Plantas</button>
-    <button onclick="filterProducts('Novias')">Novias</button>
-    <button onclick="filterProducts('Iglesias')">Iglesias</button>
-    <button onclick="filterProducts('Arreglos')">Arreglos</button>
-  </nav>
-
   <main>
-    <!-- Los filtros por tipo de flor se inyectan aquí -->
-    <div id="catalogo-container"></div>
+    <div class="category-filters">
+        <button onclick="filterProducts('Todos')">Todos</button>
+        <button onclick="filterProducts('Ramos')">Ramos de Flores</button>
+        <button onclick="filterProducts('Plantas')">Plantas</button>
+        <button onclick="filterProducts('Novias')">Ramos de Novia</button>
+        <button onclick="filterProducts('Iglesias')">Arreglos para Iglesias</button>
+        <button onclick="filterProducts('Fiestas')">Decoración para Fiestas</button>
+    </div>
+
+    <div id="catalogo-container" class="product-grid">
+        </div>
   </main>
 
-  <!-- Modal Carrito -->
-  <div id="cart-modal" class="modal">
+  <div class="modal" id="cart-modal">
     <div class="modal-content">
-      <span class="close-btn" onclick="toggleCartModal()">&times;</span>
-      <h2>Carrito</h2>
-      <div id="cart-items">Aquí se mostrarán los productos añadidos</div>
-      <button onclick="clearCart()">Vaciar carrito</button>
+      <span class="close-button" onclick="toggleCartModal()">&times;</span>
+      <h2>Tu Carrito</h2>
+
+      <div id="cart-items" class="cart-items"></div>
+
+      <div class="cart-total">
+        <span>Total:</span>
+        <span id="cart-total-price">$0</span>
+      </div>
+
+      <div class="checkout-buttons">
+        <a href="carrito.html" class="btn-whatsapp">
+          <i class="fab fa-whatsapp"></i> Finalizar Compra
+        </a>
+        <a href="carrito.html" class="btn-mercadopago">
+          <i class="fas fa-credit-card"></i> Pagar con Mercado Pago
+        </a>
+        <button class="clear-cart-button" onclick="clearCart()">Vaciar Carrito</button>
+      </div>
     </div>
   </div>
-
-  <script src="script.js"></script>
+  <footer>
+    <p style="text-align: center; padding: 20px; color: #777; font-size: 0.9em;">
+      © 2024 Florería Cristina. Todos los derechos reservados.
+    </p>
+  </footer>
 </body>
 </html>
