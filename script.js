@@ -3,6 +3,8 @@
 // === VARIABLES GLOBALES ===
 let cartItems = JSON.parse(localStorage.getItem('cart')) || []; // Carrito de compras
 let allProducts = []; // Para almacenar todos los productos cargados desde Google Sheets
+let currentCategory = 'Todos'; // Track the currently selected category filter
+let selectedFlowerTypes = []; // Track selected flower types for filtering
 
 // === FUNCIONES DE CARRITO ===
 
@@ -92,7 +94,7 @@ function renderCart() {
   const container = document.getElementById("cart-items");
   const totalDisplay = document.getElementById("cart-total-price");
   // Asegurarse de seleccionar el mensaje de "no products" si existe
-  const noProductsMessage = document.querySelector(".no-products-message"); 
+  const noProductsMessage = document.querySelector(".no-products-message");
 
   if (!container || !totalDisplay) {
     // Si no encontramos los elementos del carrito, no hacemos nada (útil para páginas sin carrito)
@@ -166,6 +168,33 @@ function clearCart() {
     // if (modal) modal.style.display = 'none';
 }
 
+// === FUNCIONES DE DETALLE DE PRODUCTO (MODAL) ===
+
+function toggleProductDetailModal() {
+  const modal = document.getElementById('product-detail-modal');
+  if (modal) {
+    modal.style.display = modal.style.display === 'block' ? 'none' : 'block';
+  }
+}
+
+function showProductDetailModal(product) {
+  const modalContent = document.getElementById('product-detail-content');
+  if (modalContent) {
+    modalContent.innerHTML = `
+      <img src="${product.imgUrl}" alt="${product.descripcion}" class="detail-image">
+      <h2>${product.descripcion}</h2>
+      <p class="detail-price">$${parseFloat(product.precio).toLocaleString('es-AR', { minimumFractionDigits: 2, maximumFractionDigits: 2 })}</p>
+      ${product.descuento ? `<p class="detail-discount">Descuento: ${product.descuento}</p>` : ''}
+      <p class="detail-description">${product.detalle || ''}</p>
+      <button class="add-to-cart-btn" onclick='addToCart(${JSON.stringify(product)})'>
+        ${['Ramos','Plantas'].includes(product.categoria) ? 'Añadir al Carrito' : 'Consultar'}
+      </button>
+    `;
+    toggleProductDetailModal();
+  }
+}
+
+
 // === FUNCIONES DE CARGA Y FILTRADO DE PRODUCTOS (Para catalogo.html) ===
 
 // Renderiza los productos en el contenedor del catálogo
@@ -175,7 +204,7 @@ function renderProducts(productsToRender) {
   container.innerHTML = ''; // Limpiar el contenedor antes de añadir productos
 
   if (productsToRender.length === 0) {
-    container.innerHTML = '<p class="no-products-found">No se encontraron productos en esta categoría.</p>';
+    container.innerHTML = '<p class="no-products-found">No se encontraron productos en esta categoría o tipo de flor.</p>';
     return;
   }
 
@@ -183,11 +212,9 @@ function renderProducts(productsToRender) {
     const productCard = document.createElement('div');
     productCard.className = 'product-card';
     productCard.innerHTML = `
-      <img src="${product.imgUrl}" alt="${product.descripcion}">
+      <img src="${product.imgUrl}" alt="${product.descripcion}" onclick='showProductDetailModal(${JSON.stringify(product)})'>
       <div class="product-info">
         <h3>${product.descripcion}</h3>
-        <p class="product-price">$${parseFloat(product.precio).toLocaleString('es-AR', { minimumFractionDigits: 2, maximumFractionDigits: 2 })}</p>
-        ${product.descuento ? `<p class="product-discount">Descuento: ${product.descuento}</p>` : ''}
         <button class="add-to-cart-btn" onclick='addToCart(${JSON.stringify(product)})'>
           ${['Ramos','Plantas'].includes(product.categoria) ? 'Añadir al Carrito' : 'Consultar'}
         </button>
@@ -197,20 +224,80 @@ function renderProducts(productsToRender) {
   });
 }
 
-// Filtra los productos por categoría
-function filterProducts(category) {
-  if (category === 'Todos') {
-    renderProducts(allProducts);
-  } else {
-    const filtered = allProducts.filter(p => p.categoria === category);
-    renderProducts(filtered);
+// Filtra los productos por categoría y tipo de flor
+function filterProducts(category = currentCategory) {
+  currentCategory = category; // Update the current category
+
+  let filtered = allProducts;
+
+  // Filter by category
+  if (currentCategory !== 'Todos') {
+    filtered = filtered.filter(p => p.categoria === currentCategory);
   }
+
+  // Filter by flower type (only applies to 'Ramos' category)
+  if (currentCategory === 'Ramos' && selectedFlowerTypes.length > 0) {
+    filtered = filtered.filter(p => selectedFlowerTypes.includes(p.tipo_flor));
+  }
+
+  // Toggle visibility of flower type filters
+  const flowerTypeContainer = document.getElementById('flower-type-filters');
+  if (flowerTypeContainer) {
+    flowerTypeContainer.style.display = (currentCategory === 'Ramos') ? 'block' : 'none';
+  }
+
+
+  renderProducts(filtered);
+}
+
+// Generar filtros de tipo de flor dinámicamente
+function generateFlowerTypeFilters() {
+  const flowerTypeContainer = document.getElementById('flower-type-filters');
+  if (!flowerTypeContainer) return;
+
+  // Clear previous filters except the heading
+  const existingCheckboxes = flowerTypeContainer.querySelectorAll('.checkbox-item');
+  existingCheckboxes.forEach(item => item.remove());
+
+
+  const flowerTypes = [...new Set(allProducts
+    .filter(p => p.categoria === 'Ramos' && p.tipo_flor)
+    .map(p => p.tipo_flor)
+  )].sort(); // Get unique flower types and sort them
+
+  flowerTypes.forEach(type => {
+    const checkboxWrapper = document.createElement('div');
+    checkboxWrapper.className = 'checkbox-item';
+    checkboxWrapper.innerHTML = `
+      <input type="checkbox" id="flower-type-${type}" value="${type}" onchange="handleFlowerTypeChange(this)">
+      <label for="flower-type-${type}">${type}</label>
+    `;
+    flowerTypeContainer.appendChild(checkboxWrapper);
+  });
+
+   // Initially hide if not in "Ramos" category
+   if (currentCategory !== 'Ramos') {
+    flowerTypeContainer.style.display = 'none';
+  } else {
+    flowerTypeContainer.style.display = 'block';
+  }
+}
+
+// Manejar cambio en los checkboxes de tipo de flor
+function handleFlowerTypeChange(checkbox) {
+  if (checkbox.checked) {
+    selectedFlowerTypes.push(checkbox.value);
+  } else {
+    selectedFlowerTypes = selectedFlowerTypes.filter(type => type !== checkbox.value);
+  }
+  filterProducts(); // Re-filter products with the new selection
 }
 
 // === Carga de datos desde Google Sheets al cargar el DOM ===
 document.addEventListener('DOMContentLoaded', () => {
     // Solo si estamos en catalogo.html, cargamos los productos
     if (document.getElementById('catalogo-container')) {
+        // Updated URL for the new Google Sheet with 'tipo_flor'
         fetch('https://docs.google.com/spreadsheets/d/e/2PACX-1vSuWDiLqjNQr0EIVb2zuyzzKMzgn1MHeu6me8QSE2KejtocSuEbHFkY4tma_rDTcl-Ba3Z7TldQpeGQ/pub?output=csv')
             .then(res => {
                 if (!res.ok) {
@@ -222,10 +309,20 @@ document.addEventListener('DOMContentLoaded', () => {
                 const rows = csv.trim().split('\n').slice(1); // Ignorar la primera fila (encabezados)
                 allProducts = rows.map(line => {
                     // Asegúrate de que el orden y el número de columnas coincidan con tu hoja
-                    const [id, categoria, imgUrl, descripcion, precio, descuento] = line.split(',');
-                    return { id, categoria, imgUrl, descripcion, precio: parseFloat(precio), descuento: descuento || null };
+                    const [id, categoria, imgUrl, descripcion, precio, descuento, tipo_flor, detalle] = line.split(',');
+                    return {
+                      id,
+                      categoria,
+                      imgUrl,
+                      descripcion,
+                      precio: parseFloat(precio),
+                      descuento: descuento || null,
+                      tipo_flor: tipo_flor || null, // New column for flower type
+                      detalle: detalle || null // New column for detailed description
+                    };
                 });
                 filterProducts('Todos'); // Mostrar todos los productos al inicio
+                generateFlowerTypeFilters(); // Generate flower type filters after loading products
             })
             .catch(err => {
                 console.error('Error al cargar los productos:', err);
