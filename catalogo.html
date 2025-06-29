@@ -1,65 +1,47 @@
 <!DOCTYPE html>
 <html lang="es">
 <head>
-  <meta charset="UTF-8" />
-  <meta name="viewport" content="width=device-width,initial-scale=1.0" />
-  <title>Catálogo - Florería Cristina</title>
-  <link href="https://fonts.googleapis.com/css2?family=Quicksand:wght@400;600&display=swap" rel="stylesheet">
-  <link rel="stylesheet" href="style.css" />
-  <script src="script.js"></script>
+  <meta charset="UTF-8">
+  <title>Catálogo de Productos</title>
+  <link rel="stylesheet" href="style.css">
 </head>
 <body>
   <header>
-    <a href="index.html" class="back-to-home">← Inicio</a>
-    <img src="https://i.postimg.cc/RZ34GxdP/Logo-Crsitina.png" alt="Logo">
+    <a href="index.html" class="logo">← Inicio</a>
     <h1>Catálogo de Productos</h1>
-    <div class="cart-summary" onclick="toggleCartModal()">
-        🛒 <span id="cart-count">0</span>
+    <div class="cart" onclick="toggleCartModal()">
+      🛒 <span id="cart-count">0</span>
     </div>
   </header>
 
-  <main>
-    <div class="category-filters">
-        <button onclick="filterProducts('Todos')">Todos</button>
-        <button onclick="filterProducts('Ramos')">Ramos de Flores</button>
-        <button onclick="filterProducts('Plantas')">Plantas</button>
-        <button onclick="filterProducts('Novias')">Ramos de Novia</button>
-        <button onclick="filterProducts('Iglesias')">Arreglos para Iglesias</button>
-        <button onclick="filterProducts('Fiestas')">Decoración para Fiestas</button>
-    </div>
+  <!-- NUEVO: contenedor principal con <main> -->
+  <main style="display: flex; gap: 20px; align-items: flex-start;">
+    <!-- Filtros de flor se inyectan dinámicamente aquí -->
 
-    <div id="catalogo-container" class="product-grid">
-        </div>
+    <!-- Catálogo -->
+    <div id="catalogo-container" style="flex-grow: 1;"></div>
   </main>
 
-  <div class="modal" id="cart-modal">
+  <!-- Filtros por categoría -->
+  <nav class="categorias">
+    <button onclick="filterProducts('Todos')">Todos</button>
+    <button onclick="filterProducts('Ramos de Flores')">Ramos de Flores</button>
+    <button onclick="filterProducts('Plantas')">Plantas</button>
+    <button onclick="filterProducts('Ramos de Novia')">Ramos de Novia</button>
+    <button onclick="filterProducts('Arreglos para Iglesias')">Arreglos para Iglesias</button>
+    <button onclick="filterProducts('Decoración para Fiestas')">Decoración para Fiestas</button>
+  </nav>
+
+  <!-- Carrito -->
+  <div id="cart-modal" class="modal">
     <div class="modal-content">
-      <span class="close-button" onclick="toggleCartModal()">&times;</span>
-      <h2>Tu Carrito</h2>
-
-      <div id="cart-items" class="cart-items"></div>
-
-      <div class="cart-total">
-        <span>Total:</span>
-        <span id="cart-total-price">$0</span>
-      </div>
-
-      <div class="checkout-buttons">
-        <a href="carrito.html" class="btn-whatsapp">
-          <i class="fab fa-whatsapp"></i> Finalizar Compra
-        </a>
-        <a href="carrito.html" class="btn-mercadopago">
-          <i class="fas fa-credit-card"></i> Pagar con Mercado Pago
-        </a>
-        <button class="clear-cart-button" onclick="clearCart()">Vaciar Carrito</button>
-      </div>
+      <span class="close-btn" onclick="toggleCartModal()">&times;</span>
+      <h2>Carrito</h2>
+      <div id="cart-items"></div>
+      <button onclick="clearCart()">Vaciar carrito</button>
     </div>
   </div>
-  <footer>
-    <p style="text-align: center; padding: 20px; color: #777; font-size: 0.9em;">
-      © 2024 Florería Cristina. Todos los derechos reservados.
-    </p>
-  </footer>
+
+  <script src="script.js"></script>
 </body>
 </html>
-
