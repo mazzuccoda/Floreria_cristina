@@ -161,11 +161,11 @@
   <div class="catalog-container">
     <aside class="filter-panel">
       <h3>Filtrar por flor</h3>
-      <div id="flowerFilters"></div>
+      <div id="flowerFilters">Cargando filtros...</div>
     </aside>
 
     <main class="product-list">
-      <div id="productsGrid"></div>
+      <div id="productsGrid">Cargando productos...</div>
     </main>
   </div>
 
@@ -188,17 +188,23 @@
     let products = [], flowerTypes = [], selectedFlowers = new Set();
 
     async function fetchProducts() {
-      const res = await fetch(SHEET_URL);
-      const csv = await res.text();
-      const parsed = Papa.parse(csv, { header: true }).data;
+      try {
+        const res = await fetch(SHEET_URL);
+        const csv = await res.text();
+        const parsed = Papa.parse(csv, { header: true }).data;
 
-      // Detectar columnas florales (todo lo que no sea id, nombre, precio, img, descripcion)
-      const sample = parsed[0];
-      flowerTypes = Object.keys(sample).filter(k => !['id', 'nombre', 'precio', 'img', 'descripcion'].includes(k));
-      products = parsed.filter(p => p.nombre);
+        // Detectar columnas florales (excluyendo columnas fijas)
+        const fixedCols = ['id', 'nombre', 'precio', 'descripcion', 'img'];
+        const sample = parsed[0];
+        flowerTypes = Object.keys(sample).filter(k => !fixedCols.includes(k));
+        products = parsed.filter(p => p.nombre);
 
-      renderFilters();
-      renderProducts();
+        renderFilters();
+        renderProducts();
+      } catch (err) {
+        console.error('Error cargando productos:', err);
+        document.getElementById('productsGrid').innerHTML = '<p>Error cargando catálogo.</p>';
+      }
     }
 
     function renderFilters() {
@@ -220,6 +226,11 @@
         if (selectedFlowers.size === 0) return true;
         return [...selectedFlowers].some(flor => p[flor] === '1');
       });
+
+      if (filtered.length === 0) {
+        grid.innerHTML = '<p>No se encontraron productos con esas flores.</p>';
+        return;
+      }
 
       grid.innerHTML = filtered.map(p => `
         <div class="product">
