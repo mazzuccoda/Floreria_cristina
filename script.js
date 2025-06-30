@@ -295,33 +295,21 @@ function filterProducts(category) {
   }
 }
 
-// === Carga de datos desde Google Sheets al cargar el DOM ===
+// === Carga de datos al cargar el DOM ===
 document.addEventListener('DOMContentLoaded', () => {
     // Solo si estamos en catalogo.html, cargamos los productos
     if (document.getElementById('catalogo-container')) {
-        fetch('https://docs.google.com/spreadsheets/d/e/2PACX-1vSuWDiLqjNQr0EIVb2zuyzzKMzgn1MHeu6me8QSE2KejtocSuEbHFkY4tma_rDTcl-Ba3Z7TldQpeGQ/pub?output=csv')
-            .then(res => {
-                if (!res.ok) {
-                    throw new Error(`HTTP error! status: ${res.status}`);
-                }
-                return res.text();
-            })
-            .then(csv => {
-                const rows = csv.trim().split('\n').slice(1); // Ignorar la primera fila (encabezados)
-                allProducts = rows.map(line => {
-                    // Asegúrate de que el orden y el número de columnas coincidan con tu hoja
-                    const [id, categoria, imgUrl, descripcion, precio, descuento] = line.split(',');
-                    return { id, categoria, imgUrl, descripcion, precio: parseFloat(precio), descuento: descuento || null };
-                });
-                filterProducts('Todos'); // Mostrar todos los productos al inicio
-            })
-            .catch(err => {
-                console.error('Error al cargar los productos:', err);
-                const container = document.getElementById('catalogo-container');
-                if (container) {
-                    container.innerHTML = '<p class="error-message">Error al cargar los productos. Por favor, inténtalo de nuevo más tarde.</p>';
-                }
-            });
+        loadProducts() // Carga los productos desde productos.json
+        .then(() => {
+            filterProducts('Todos'); // Mostrar todos los productos al inicio
+        })
+        .catch(err => {
+            console.error('Error al cargar los productos:', err);
+            const container = document.getElementById('catalogo-container');
+            if (container) {
+                container.innerHTML = '<p class="error-message">Error al cargar los productos. Por favor, inténtalo de nuevo más tarde.</p>';
+            }
+        });
     }
 
     // Para carrito.html, asegurarnos de renderizar el carrito al cargar la página
