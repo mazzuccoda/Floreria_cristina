@@ -56,22 +56,22 @@ async function loadProducts() {
         const data = await response.json();
         allProducts = data.productos;
         renderProducts(allProducts);
+        return allProducts;
     } catch (error) {
         console.error('Error al cargar productos:', error);
+        throw error;
     }
 }
 
 // === FUNCIONES DE CARRITO ===
 
-// === FUNCIONES DE CARRITO ===
-
 // Función para actualizar el contador del carrito en el icono del header
 function updateCartIcon() {
-  const cartCountElement = document.getElementById('cart-count');
-  if (cartCountElement) {
-    const totalItems = cartItems.reduce((sum, item) => sum + item.quantity, 0);
-    cartCountElement.textContent = totalItems;
-  }
+    const cartCountElement = document.getElementById('cart-count');
+    if (cartCountElement) {
+        const totalItems = cartItems.reduce((sum, item) => sum + item.quantity, 0);
+        cartCountElement.textContent = totalItems;
+    }
 }
 
 // Función para mostrar notificaciones

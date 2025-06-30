@@ -7,15 +7,54 @@
   <link href="https://fonts.googleapis.com/css2?family=Quicksand:wght@400;600&display=swap" rel="stylesheet">
   <link rel="stylesheet" href="style.css" />
   <script src="notifications.js"></script>
-<script src="script.js"></script>
-<script>
-    // Cargar productos al inicio
+  <script src="script.js"></script>
+  <script>
+    // Manejar eventos de filtros
     document.addEventListener('DOMContentLoaded', () => {
-        loadProducts();
-        // Inicializar carrito
-        loadCart();
-        // Inicializar wishlist
-        loadWishlist();
+        // Manejar filtros de categoría
+        document.querySelectorAll('.category-filters button').forEach(button => {
+            button.addEventListener('click', function() {
+                const category = this.getAttribute('data-category');
+                
+                // Actualizar clase activa
+                document.querySelectorAll('.category-filters button').forEach(btn => btn.classList.remove('active'));
+                this.classList.add('active');
+                
+                // Actualizar filtros de tipo
+                const typeButtons = document.querySelectorAll('.type-filters button');
+                typeButtons.forEach(btn => btn.classList.remove('active'));
+                typeButtons[0].classList.add('active');
+                
+                // Filtrar productos
+                filterProducts(category);
+            });
+        });
+
+        // Manejar filtros de tipo
+        document.querySelectorAll('.type-filters button').forEach(button => {
+            button.addEventListener('click', function() {
+                const type = this.getAttribute('data-type');
+                const activeCategory = document.querySelector('.category-filters .active');
+                const category = activeCategory.getAttribute('data-category');
+                
+                // Actualizar clase activa
+                document.querySelectorAll('.type-filters button').forEach(btn => btn.classList.remove('active'));
+                this.classList.add('active');
+                
+                // Filtrar productos
+                filterProducts(category, type);
+            });
+        });
+
+        // Cargar productos al inicio
+        loadProducts()
+            .then(() => {
+                loadCart();
+                loadWishlist();
+            })
+            .catch(error => {
+                console.error('Error al cargar productos:', error);
+            });
     });
 
     // Función para filtrar productos
@@ -61,25 +100,26 @@
   </header>
 
   <main>
-    <div class="category-filters">
-        <button onclick="filterProducts('Todos')" class="active">Todos</button>
-        <button onclick="filterProducts('Ramos')">Ramos de Flores</button>
-        <button onclick="filterProducts('Plantas')">Plantas</button>
-        <button onclick="filterProducts('Novias')">Ramos de Novia</button>
-        <button onclick="filterProducts('Iglesias')">Arreglos para Iglesias</button>
-        <button onclick="filterProducts('Fiestas')">Decoración para Fiestas</button>
-    </div>
+    <div class="filters-container">
+        <div class="category-filters">
+            <button class="active" data-category="Todos">Todos</button>
+            <button data-category="Ramos">Ramos de Flores</button>
+            <button data-category="Plantas">Plantas</button>
+            <button data-category="Novias">Ramos de Novia</button>
+            <button data-category="Iglesias">Arreglos para Iglesias</button>
+            <button data-category="Fiestas">Decoración para Fiestas</button>
+        </div>
 
-    <!-- Filtros de tipo -->
-    <div id="type-filters" class="type-filters">
-        <button onclick="filterProducts(document.querySelector('.category-filters button.active').textContent, 'Todos')" class="active">Todos</button>
-        <button onclick="filterProducts('Ramos', 'Rosas')">Rosas</button>
-        <button onclick="filterProducts('Ramos', 'Gardenias')">Gardenias</button>
-        <button onclick="filterProducts('Ramos', 'Lirios')">Lirios</button>
-        <button onclick="filterProducts('Ramos', 'Orquídeas')">Orquídeas</button>
-        <button onclick="filterProducts('Plantas', 'Interior')">Interior</button>
-        <button onclick="filterProducts('Plantas', 'Exterior')">Exterior</button>
-        <button onclick="filterProducts('Novias', 'Clásico')">Clásico</button>
+        <div id="type-filters" class="type-filters">
+            <button class="active" data-type="Todos">Todos</button>
+            <button data-type="Rosas">Rosas</button>
+            <button data-type="Gardenias">Gardenias</button>
+            <button data-type="Lirios">Lirios</button>
+            <button data-type="Orquídeas">Orquídeas</button>
+            <button data-type="Interior">Interior</button>
+            <button data-type="Exterior">Exterior</button>
+            <button data-type="Clásico">Clásico</button>
+        </div>
     </div>
 
     <div id="catalogo-container" class="product-grid">
