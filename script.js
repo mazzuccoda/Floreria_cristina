@@ -49,60 +49,202 @@ let userPoints = parseInt(localStorage.getItem('userPoints')) || 0; // Sistema d
 let wishList = JSON.parse(localStorage.getItem('wishList')) || []; // Lista de deseos
 let savedCarts = JSON.parse(localStorage.getItem('savedCarts')) || {}; // Carritos guardados
 
-// === FUNCIONES DE CARGA DE DATOS ===
-// Datos estáticos de productos
-const staticProducts = [
-    {
-        id: "1",
-        categoria: "Ramos",
-        tipo: "Clásico",
-        descripcion: "Ramo de rosas rojas",
-        precio: 1500,
-        imgUrl: "img/ramo-rosas.jpg",
-        descuento: null
-    },
-    {
-        id: "2",
-        categoria: "Plantas",
-        tipo: "Interior",
-        descripcion: "Planta de suculenta",
-        precio: 800,
-        imgUrl: "img/planta-suculenta.jpg",
-        descuento: 10
-    },
-    {
-        id: "3",
-        categoria: "Novias",
-        tipo: "Bouquet",
-        descripcion: "Bouquet de novia con rosas y baby's breath",
-        precio: 2500,
-        imgUrl: "img/bouquet-novia.jpg",
-        descuento: null
-    },
-    {
-        id: "4",
-        categoria: "Iglesias",
-        tipo: "Arreglo",
-        descripcion: "Arreglo para altar con lirios y orquídeas",
-        precio: 3500,
-        imgUrl: "img/arreglo-altar.jpg",
-        descuento: 15
-    },
-    {
-        id: "5",
-        categoria: "Fiestas",
-        tipo: "Decoración",
-        descripcion: "Centro de mesa con flores de temporada",
-        precio: 1800,
-        imgUrl: "img/centro-mesa.jpg",
-        descuento: null
-    }
-];
+// === FUNCIONES DE RENDERIZADO ===
+// Función para renderizar los productos en la página
+function renderProducts(products) {
+    try {
+        const container = document.getElementById('catalogo-container');
+        if (!container) {
+            throw new Error('No se encontró el contenedor de productos');
+        }
 
+        if (!products || products.length === 0) {
+            container.innerHTML = `
+                <div class="empty-state">
+                    <i class="fas fa-search"></i>
+                    <p>No se encontraron productos que coincidan con tu búsqueda</p>
+                </div>
+            `;
+            return;
+        }
+
+        container.innerHTML = products.map(product => `
+            <div class="product-card">
+                <div class="product-image">
+                    <img src="${product.imgUrl}" alt="${product.descripcion}" onerror="this.src='https://via.placeholder.com/300x300?text=Imagen+no+disponible'">
+                    ${product.descuento ? `<span class="discount-badge">-${product.descuento}%</span>` : ''}
+                </div>
+                <div class="product-details">
+                    <h3>${product.descripcion}</h3>
+                    <p class="product-category">${product.categoria} - ${product.tipo}</p>
+                    <div class="product-price">
+                        ${product.descuento ? 
+                            `<span class="original-price">$${(product.precio * (1 + product.descuento/100)).toFixed(2)}</span>` : 
+                            ''
+                        }
+                        <span class="final-price">$${product.precio.toFixed(2)}</span>
+                    </div>
+                    <div class="product-actions">
+                        <button onclick="addToCart(${product.id})" class="add-to-cart-btn">
+                            <i class="fas fa-cart-plus"></i> Añadir al carrito
+                        </button>
+                        <button onclick="addToWishlist(${product.id})" class="wishlist-btn">
+                            <i class="far fa-heart"></i>
+                        </button>
+                    </div>
+                </div>
+            </div>
+        `).join('');
+
+    } catch (error) {
+        console.error('Error al renderizar productos:', error);
+        const container = document.getElementById('catalogo-container');
+        if (container) {
+            container.innerHTML = `
+                <div class="error-state">
+                    <i class="fas fa-exclamation-triangle"></i>
+                    <p>Error al cargar los productos: ${error.message}</p>
+                    <button onclick="window.location.reload()" class="retry-btn">
+                        <i class="fas fa-sync"></i> Reintentar
+                    </button>
+                </div>
+            `;
+        }
+    }
+}
+
+// === FUNCIONES DE FILTRADO ===
+// La función initializeFilters está definida más adelante en el archivo
+
+// === FUNCIONES DEL CARRITO ===
+// Función para agregar un producto al carrito
+function addToCart(productId) {
+    try {
+        // Buscar el producto por su ID
+        const product = staticProducts.find(p => p.id === productId);
+        if (!product) {
+            throw new Error('Producto no encontrado');
+        }
+
+        // Verificar si el producto ya está en el carrito
+        const existingItem = cartItems.find(item => item.id === productId);
+        
+        if (existingItem) {
+            // Incrementar la cantidad si ya existe
+            existingItem.quantity += 1;
+        } else {
+            // Agregar nuevo ítem al carrito
+            cartItems.push({
+                id: product.id,
+                nombre: product.descripcion,
+                precio: product.precio,
+                imgUrl: product.imgUrl,
+                quantity: 1
+            });
+        }
+
+        // Actualizar el almacenamiento local
+        localStorage.setItem('cart', JSON.stringify(cartItems));
+        
+        // Actualizar el ícono del carrito
+        updateCartIcon();
+        
+        // Mostrar notificación de éxito
+        showNotification('Producto agregado al carrito', 'success');
+        
+    } catch (error) {
+        console.error('Error al agregar al carrito:', error);
+        showNotification('Error al agregar el producto al carrito', 'error');
+    }
+}
+
+// Función para manejar la consulta de un producto
+function consultarProducto(product) {
+    try {
+        // Mostrar un diálogo de confirmación
+        const confirmarConsulta = confirm(`¿Deseas más información sobre ${product.descripcion}?\n\nPrecio: $${product.precio.toFixed(2)}\nCategoría: ${product.categoria}\n\nTe contactaremos a la brevedad.`);
+        
+        if (confirmarConsulta) {
+            // Aquí podrías implementar la lógica para enviar la consulta
+            // Por ejemplo, abrir un formulario de contacto o enviar un correo
+            showNotification('Hemos recibido tu consulta. Te contactaremos pronto.', 'success');
+            
+            // Opcional: Registrar la consulta en el almacenamiento local
+            const consultas = JSON.parse(localStorage.getItem('consultas') || '[]');
+            consultas.push({
+                productoId: product.id,
+                productoNombre: product.descripcion,
+                fecha: new Date().toISOString()
+            });
+            localStorage.setItem('consultas', JSON.stringify(consultas));
+        }
+    } catch (error) {
+        console.error('Error al procesar la consulta:', error);
+        showNotification('Error al procesar tu consulta. Por favor, inténtalo de nuevo.', 'error');
+    }
+}
+
+// Función para agregar un producto a la lista de deseos
+function addToWishlist(productId) {
+    try {
+        // Buscar el producto por su ID
+        const product = staticProducts.find(p => p.id === productId);
+        if (!product) {
+            throw new Error('Producto no encontrado');
+        }
+
+        // Verificar si el producto ya está en la lista de deseos
+        const existingItem = wishList.find(item => item.id === productId);
+        
+        if (existingItem) {
+            // Si ya está en la lista, no hacer nada
+            showNotification('Este producto ya está en tu lista de deseos', 'info');
+            return;
+        }
+
+        // Agregar a la lista de deseos
+        wishList.push({
+            id: product.id,
+            nombre: product.descripcion,
+            precio: product.precio,
+            imgUrl: product.imgUrl
+        });
+
+        // Actualizar el almacenamiento local
+        localStorage.setItem('wishList', JSON.stringify(wishList));
+        
+        // Mostrar notificación de éxito
+        showNotification('Producto agregado a tu lista de deseos', 'success');
+        
+    } catch (error) {
+        console.error('Error al agregar a la lista de deseos:', error);
+        showNotification('Error al agregar el producto a la lista de deseos', 'error');
+    }
+}
+
+// Función para actualizar el ícono del carrito
+function updateCartIcon() {
+    try {
+        const cartIcon = document.getElementById('cart-count');
+        if (cartIcon) {
+            const totalItems = cartItems.reduce((total, item) => total + item.quantity, 0);
+            cartIcon.textContent = totalItems > 0 ? totalItems : '';
+            cartIcon.style.display = totalItems > 0 ? 'flex' : 'none';
+        }
+    } catch (error) {
+        console.error('Error al actualizar el ícono del carrito:', error);
+    }
+}
+
+// === FUNCIONES DE CARGA DE DATOS ===
 // Función para cargar productos
 function loadProducts() {
     return new Promise((resolve, reject) => {
         try {
+            // Inicializar el carrito
+            cartItems = JSON.parse(localStorage.getItem('cart')) || [];
+            updateCartIcon();
+            
             // Usar datos estáticos
             allProducts = staticProducts;
             
@@ -138,6 +280,57 @@ function loadProducts() {
         }
     });
 }
+
+// Datos estáticos de productos
+const staticProducts = [
+    {
+        id: "1",
+        categoria: "Ramos",
+        tipo: "Clásico",
+        descripcion: "Ramo de rosas rojas",
+        precio: 1500,
+        imgUrl: "https://images.unsplash.com/photo-1490750967868-88aa4486ec95?w=500&auto=format&fit=crop&q=60",
+        descuento: null
+    },
+    {
+        id: "2",
+        categoria: "Plantas",
+        tipo: "Interior",
+        descripcion: "Planta de suculenta",
+        precio: 800,
+        imgUrl: "https://images.unsplash.com/photo-1485955900956-50d97f387d27?w=500&auto=format&fit=crop&q=60",
+        descuento: 10
+    },
+    {
+        id: "3",
+        categoria: "Novias",
+        tipo: "Bouquet",
+        descripcion: "Bouquet de novia con rosas y baby's breath",
+        precio: 2500,
+        imgUrl: "https://images.unsplash.com/photo-1526404866585-3a9e5c37ebf0?w=500&auto=format&fit=crop&q=60",
+        descuento: null
+    },
+    {
+        id: "4",
+        categoria: "Iglesias",
+        tipo: "Arreglo",
+        descripcion: "Arreglo para altar con lirios y orquídeas",
+        precio: 3500,
+        imgUrl: "https://images.unsplash.com/photo-1511895426327-d643d9c01e4f?w=500&auto=format&fit=crop&q=60",
+        descuento: 15
+    },
+    {
+        id: "5",
+        categoria: "Fiestas",
+        tipo: "Decoración",
+        descripcion: "Centro de mesa con flores de temporada",
+        precio: 1800,
+        imgUrl: "https://images.unsplash.com/photo-1519378058457-4c29a0a2efac?w=500&auto=format&fit=crop&q=60",
+        descuento: null
+    }
+];
+
+
 
 // Exportar la función para que esté disponible en el HTML
 window.loadProducts = loadProducts;
