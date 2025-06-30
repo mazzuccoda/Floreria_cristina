@@ -25,10 +25,10 @@
   <!-- solo se muestra el bloque modificado -->
 
 <!-- HERO principal -->
-<section style="background: url('https://lh3.googleusercontent.com/p/AF1QipN22SKuyZEUNUAhH5N25UD5B9Zlv9oJxwYtfAdC=s1360-w1360-h1020-rw') center/cover no-repeat; padding: 100px 20px; text-align: center; color: white;">
-  <h1 style="font-size: 2.5rem; margin-bottom: 20px;">Flores frescas a domicilio en Tucumán</h1>
-  <p style="font-size: 1.2rem; margin-bottom: 30px;">Ramos, plantas y decoración floral para todas las ocasiones</p>
-  <a href="catalogo.html" style="padding: 12px 25px; background: #4c9a58; color: white; font-weight: bold; border-radius: 8px; text-decoration: none;">Ver catálogo</a>
+<section class="hero-banner">
+  <h1>Flores frescas a domicilio en Tucumán</h1>
+  <p>Ramos, plantas y decoración floral para todas las ocasiones</p>
+  <a href="catalogo.html" class="hero-btn">Ver catálogo</a>
 </section>
  
 
@@ -63,27 +63,27 @@
         <h3>Decoración para Fiestas</h3>
       </a>
     </div>
-<section id="contacto" style="padding: 40px 20px; background-color: #f9f9f9;">
-    <h2 style="text-align: center; color: #4c9a58; margin-bottom: 20px;">Contactanos hoy mismo</h2>
-    <div style="display: flex; flex-wrap: wrap; gap: 20px; justify-content: center; max-width: 1000px; margin: 0 auto;">
+<section id="contacto">
+  <h2>Contactanos hoy mismo</h2>
+  <div class="contact-cards">
 
       <!-- Teléfono -->
-      <div style="flex: 1 1 250px; background: white; padding: 20px; border-radius: 8px; box-shadow: 0 1px 5px rgba(0,0,0,0.1); text-align: center;">
-        <i class="fas fa-phone" style="font-size: 24px; color: #4c9a58;"></i>
+    <div class="contact-card">
+      <i class="fas fa-phone"></i>
         <h3>Teléfono</h3>
         <p><a href="tel:+543814778577">+54 9 381 477 8577</a></p>
       </div>
 
       <!-- Email -->
-      <div style="flex: 1 1 250px; background: white; padding: 20px; border-radius: 8px; box-shadow: 0 1px 5px rgba(0,0,0,0.1); text-align: center;">
-        <i class="fas fa-envelope" style="font-size: 24px; color: #4c9a58;"></i>
+    <div class="contact-card">
+      <i class="fas fa-envelope"></i>
         <h3>Email</h3>
         <p><a href="mailto:eleososatuc@gmail.com">eleososatuc@gmail.com</a></p>
       </div>
 
       <!-- WhatsApp -->
-      <div style="flex: 1 1 250px; background: white; padding: 20px; border-radius: 8px; box-shadow: 0 1px 5px rgba(0,0,0,0.1); text-align: center;">
-        <i class="fab fa-whatsapp" style="font-size: 24px; color: #4c9a58;"></i>
+    <div class="contact-card">
+      <i class="fab fa-whatsapp"></i>
         <h3>WhatsApp</h3>
         <p><a href="https://wa.me/5493814778577" target="_blank">Chatear ahora</a></p>
       </div>
@@ -91,12 +91,11 @@
     </div>
 
     <!-- Mapa -->
-    <div style="margin-top: 40px;">
+  <div>
       <iframe 
         src="https://www.google.com/maps/embed?pb=!1m18!1m12!1m3!1d14244.264061015176!2d-65.2853918!3d-26.8167291!2m3!1f0!2f0!3f0!3m2!1i1024!2i768!4f13.1!3m3!1m2!1s0x941e0b29d13c5fc5%3A0x5c1405c705490d64!2sSolano%20Vera%20480%2C%20Yerba%20Buena%2C%20Tucum%C3%A1n!5e0!3m2!1ses-419!2sar!4v1719098752874" 
         width="100%" 
         height="300" 
-        style="border:0; border-radius: 8px;" 
         allowfullscreen="" 
         loading="lazy" 
         referrerpolicy="no-referrer-when-downgrade">
@@ -107,17 +106,17 @@
 
     <!-- Formulario de contacto -->
 <div style="margin-top: 40px;">
-  <h3 style="text-align: center; color: #4c9a58; margin-bottom: 20px;">Dejanos tu mensaje</h3>
-  <form action="https://formsubmit.co/eleososatuc@gmail.com" method="POST" style="max-width: 600px; margin: 0 auto; display: flex; flex-direction: column; gap: 15px;">
+  <h3>Dejanos tu mensaje</h3>
+  <form action="https://formsubmit.co/eleososatuc@gmail.com" method="POST">
 
-    <input type="text" name="name" placeholder="Tu nombre" required style="padding: 12px; border: 1px solid #ccc; border-radius: 6px;">
-    <input type="email" name="email" placeholder="Tu email" required style="padding: 12px; border: 1px solid #ccc; border-radius: 6px;">
-    <textarea name="message" rows="5" placeholder="Escribí tu mensaje..." required style="padding: 12px; border: 1px solid #ccc; border-radius: 6px;"></textarea>
+    <input type="text" name="name" placeholder="Tu nombre" required>
+    <input type="email" name="email" placeholder="Tu email" required>
+    <textarea name="message" rows="5" placeholder="Escribí tu mensaje..." required></textarea>
 
     <!-- Opcional: mensaje de éxito en redirección -->
     <input type="hidden" name="_next" value="https://tusitio.github.io/Floreria_cristina/gracias.html">
 
-    <button type="submit" style="background-color: #4caf50; color: white; border: none; padding: 12px; border-radius: 6px; font-size: 1rem; cursor: pointer;">
+    <button type="submit">
       Enviar mensaje
     </button>
   </form>
@@ -126,7 +125,7 @@
   </main>
 
 <!-- Footer -->
-<footer style="background: #f9f9f9; padding: 40px 20px; text-align: center; color: #444; font-size: 0.95rem;">
+<footer>
   <h3 style="color: #4caf50;">Conocenos y conectá 🌸</h3>
   <p>Gracias por visitar <strong>Florería Cristina</strong>. Nos dedicamos con amor a cada ramo, arreglo y planta que entregamos.</p>
   <p>📍 Solano Vera 480, Yerba Buena, Tucumán</p>
@@ -137,31 +136,7 @@
   <p style="color: #999;">© 2025 Florería Cristina — Todos los derechos reservados</p>
 </footer>
 
-  <!-- Barra flotante con íconos oficiales -->
-<style>
-  .redes-flotantes {
-    position: fixed;
-    bottom: 20px;
-    right: 20px;
-    display: flex;
-    flex-direction: column;
-    gap: 12px;
-    z-index: 999;
-  }
-
-  .redes-flotantes a img {
-    width: 50px;
-    height: 50px;
-    border-radius: 50%;
-    box-shadow: 0 4px 10px rgba(0,0,0,0.2);
-    transition: transform 0.3s ease;
-  }
-
-  .redes-flotantes a img:hover {
-    transform: scale(1.1);
-  }
-</style>
-
+<!-- Barra flotante con íconos oficiales -->
 <div class="redes-flotantes">
   <a href="https://wa.me/5493814778577" target="_blank" title="WhatsApp">
     <img src="https://cdn-icons-png.flaticon.com/512/733/733585.png" alt="WhatsApp">
