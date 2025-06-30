@@ -1,8 +1,14 @@
 // script.js
+import CONFIG from './config.js';
 
 // === VARIABLES GLOBALES ===
 let cartItems = JSON.parse(localStorage.getItem('cart')) || []; // Carrito de compras
 let allProducts = []; // Para almacenar todos los productos cargados desde Google Sheets
+let userPoints = parseInt(localStorage.getItem('userPoints')) || 0; // Sistema de puntos
+let wishList = JSON.parse(localStorage.getItem('wishList')) || []; // Lista de deseos
+let savedCarts = JSON.parse(localStorage.getItem('savedCarts')) || {}; // Carritos guardados
+
+// === FUNCIONES DE CARRITO ===
 
 // === FUNCIONES DE CARRITO ===
 
@@ -23,18 +29,39 @@ function addToCart(product) {
     return;
   }
 
+  // Verificar si el producto está en la lista de deseos y moverlo al carrito
+  const wishIndex = wishList.findIndex(item => item.id === product.id);
+  if (wishIndex !== -1) {
+    wishList.splice(wishIndex, 1);
+    localStorage.setItem('wishList', JSON.stringify(wishList));
+  }
+
   const existingProduct = cartItems.find(item => item.id === product.id);
   if (existingProduct) {
     existingProduct.quantity++;
   } else {
     // Asegúrate de que el 'image' se guarde para el carrito.
     // Usamos product.imgUrl porque así lo llamas en tus datos de Google Sheets.
-    cartItems.push({ ...product, name: product.descripcion, price: parseFloat(product.precio), image: product.imgUrl, quantity: 1 });
+    cartItems.push({ 
+      ...product, 
+      name: product.descripcion, 
+      price: parseFloat(product.precio), 
+      image: product.imgUrl, 
+      quantity: 1,
+      dateAdded: new Date().toISOString(),
+      discount: calculateDiscount(product)
+    });
   }
+  
+  // Actualizar puntos del usuario
+  updateUserPoints(product.price);
+  
   localStorage.setItem('cart', JSON.stringify(cartItems));
   updateCartIcon();
-  alert(`"${product.descripcion}" añadido al carrito.`);
-  // Aquí podrías añadir una animación o un mensaje más sofisticado
+  showNotification(`"${product.descripcion}" añadido al carrito.`, 'success');
+  
+  // Actualizar resumen del carrito
+  updateCartSummary();
 }
 
 // Función para abrir WhatsApp para productos de consulta
@@ -58,10 +85,12 @@ loadCart();
 // Funciones para manejar la apertura y cierre del modal del carrito
 function toggleCartModal() {
   const modal = document.getElementById("cart-modal");
-  if (modal) { // Asegurarse de que el modal existe en la página actual (ej. catalogo.html)
+  if (modal) {
       modal.style.display = modal.style.display === "block" ? "none" : "block";
       if (modal.style.display === "block") {
-          renderCart(); // Renderiza el carrito cada vez que se abre el modal
+          renderCart();
+          updateCartSummary();
+          updateWishList();
       }
   }
 }
@@ -91,68 +120,106 @@ function updateQuantity(index, change) {
 function renderCart() {
   const container = document.getElementById("cart-items");
   const totalDisplay = document.getElementById("cart-total-price");
-  // Asegurarse de seleccionar el mensaje de "no products" si existe
   const noProductsMessage = document.querySelector(".no-products-message"); 
 
-  if (!container || !totalDisplay) {
-    // Si no encontramos los elementos del carrito, no hacemos nada (útil para páginas sin carrito)
-    return;
-  }
+  if (!container || !totalDisplay) return;
 
-  container.innerHTML = ""; // Limpiar el contenedor antes de renderizar
+  container.innerHTML = "";
   let total = 0;
+  let totalWithDiscount = 0;
 
   if (cartItems.length === 0) {
-    container.innerHTML = "<p class='empty-cart-message'>Tu carrito está vacío.</p>"; // Mensaje en el contenedor de items
+    container.innerHTML = "<p class='empty-cart-message'>Tu carrito está vacío.</p>";
     totalDisplay.innerText = "$0";
-    if (noProductsMessage) noProductsMessage.style.display = "block"; // Mostrar el mensaje si existe
+    if (noProductsMessage) noProductsMessage.style.display = "block";
   } else {
-    if (noProductsMessage) noProductsMessage.style.display = "none"; // Ocultar el mensaje si hay productos
+    if (noProductsMessage) noProductsMessage.style.display = "none";
 
     cartItems.forEach((item, index) => {
       const subtotal = item.price * item.quantity;
+      const itemDiscount = item.discount || 0;
+      const discountedPrice = subtotal * (1 - itemDiscount);
+      
       total += subtotal;
+      totalWithDiscount += discountedPrice;
 
       container.innerHTML += `
         <div class="cart-item">
           <img src="${item.image}" alt="${item.name}">
           <div style="flex-grow:1;">
             <h4>${item.name}</h4>
-            <span>$${item.price.toLocaleString('es-AR', { minimumFractionDigits: 2, maximumFractionDigits: 2 })} c/u</span>
+            <div class="price-container">
+              <span class="original-price">$${item.price.toLocaleString('es-AR')} c/u</span>
+              ${item.discount ? `<span class="discounted-price">$${(item.price * (1 - item.discount)).toLocaleString('es-AR')} c/u</span>` : ''}
+            </div>
             <div class="cart-controls">
               <button onclick="updateQuantity(${index}, -1)">-</button>
               <span>${item.quantity}</span>
               <button onclick="updateQuantity(${index}, 1)">+</button>
             </div>
+            ${item.discount ? `<div class="discount-badge">-${Math.round(item.discount * 100)}%</div>` : ''}
           </div>
           <button class="cart-remove" onclick="removeItem(${index})">&times;</button>
+          <button class="save-item" onclick="saveCartItem(${index})">Guardar</button>
         </div>
       `;
     });
   }
-  totalDisplay.innerText = "$" + total.toLocaleString('es-AR', { minimumFractionDigits: 2, maximumFractionDigits: 2 });
-}
 
+  // Mostrar resumen del carrito
+  const summaryHtml = `
+    <div class="cart-summary">
+      <div class="summary-item">
+        <span>Subtotal:</span>
+        <span>$${total.toLocaleString('es-AR')}</span>
+      </div>
+      <div class="summary-item">
+        <span>Descuentos:</span>
+        <span>-$${(total - totalWithDiscount).toLocaleString('es-AR')}</span>
+      </div>
+      <div class="summary-item">
+        <span>Envío:</span>
+        <span>$${calculateDeliveryCost(totalWithDiscount).toLocaleString('es-AR')}</span>
+      </div>
+      <div class="summary-item total">
+        <span>Total:</span>
+        <span>$${(totalWithDiscount + calculateDeliveryCost(totalWithDiscount)).toLocaleString('es-AR')}</span>
+      </div>
+    </div>
+  `;
+
+  container.innerHTML += summaryHtml;
+  totalDisplay.innerText = `$${(totalWithDiscount + calculateDeliveryCost(totalWithDiscount)).toLocaleString('es-AR')}`;
+}
 
 // Función para finalizar compra y limpiar carrito (para el botón de WhatsApp)
 function checkoutCart() {
     if (cartItems.length === 0) {
-        alert("Tu carrito está vacío. Agrega productos antes de finalizar la compra.");
+        showNotification("Tu carrito está vacío. Agrega productos antes de finalizar la compra.", 'error');
         return;
     }
 
-    const resumen = cartItems.map(p => `• ${p.name} - $${p.price.toLocaleString('es-AR', { minimumFractionDigits: 2, maximumFractionDigits: 2 })} x ${p.quantity}`).join('\n');
-    const total = cartItems.reduce((sum, p) => sum + (p.price * p.quantity), 0);
-    const mensaje = `Hola, quiero comprar:\n${resumen}\nTotal: $${total.toLocaleString('es-AR', { minimumFractionDigits: 2, maximumFractionDigits: 2 })}`;
-
+    // Calcular descuentos y totales
+    const cartSummary = calculateCartSummary();
+    
+    // Crear mensaje para WhatsApp
+    const mensaje = createWhatsAppMessage(cartSummary);
+    
     // Tu número de WhatsApp de contacto
-    const whatsappNumber = '5493814778577'; // Asegúrate de que sea el correcto
+    const whatsappNumber = '5493814778577';
 
+    // Abrir WhatsApp
     window.open(`https://wa.me/${whatsappNumber}?text=${encodeURIComponent(mensaje)}`, '_blank');
 
-    // Opcional: limpiar el carrito después de enviar a WhatsApp
-    // clearCart();
-    // toggleCartModal(); // Cerrar el modal si estás en el modal del catálogo
+    // Guardar carrito actual
+    saveCurrentCart();
+    
+    // Limpiar carrito y actualizar UI
+    clearCart();
+    toggleCartModal();
+    
+    // Mostrar resumen de la compra
+    showPurchaseSummary(cartSummary);
 }
 
 // Función para limpiar el carrito completamente
