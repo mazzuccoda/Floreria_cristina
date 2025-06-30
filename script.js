@@ -307,74 +307,30 @@ function clearCart() {
     // if (modal) modal.style.display = 'none';
 }
 
-// === FUNCIONES DE CARGA Y FILTRADO DE PRODUCTOS (Para catalogo.html) ===
-
-// Filtra los productos por categoría y tipo
-function filterProducts(category, tipo = '') {
-    let filteredProducts = category === 'Todos' ? allProducts : allProducts.filter(p => p.categoria === category);
-    
-    if (tipo && tipo !== 'Todos') {
-        filteredProducts = filteredProducts.filter(p => p.tipo === tipo);
-    }
-    
-    renderProducts(filteredProducts);
-    
-    // Actualizar clase activa en los botones de filtro
-    document.querySelectorAll('.category-filters button').forEach(btn => {
-        btn.classList.remove('active');
-        if (btn.textContent === category || (category === 'Todos' && btn.textContent === 'Todos')) {
-            btn.classList.add('active');
-        }
-    });
-    
-    // Actualizar clase activa en los filtros de tipo
-    document.querySelectorAll('.type-filters button').forEach(btn => {
-        btn.classList.remove('active');
-        if (btn.textContent === tipo || (tipo === '' && btn.textContent === 'Todos')) {
-            btn.classList.add('active');
-        }
+const existingProduct = cartItems.find(item => item.id === product.id);
+if (existingProduct) {
+    existingProduct.quantity++;
+} else {
+    cartItems.push({ 
+      ...product, 
+      name: product.descripcion, 
+      price: parseFloat(product.precio), 
+      image: product.imgUrl, 
+      quantity: 1,
+      dateAdded: new Date().toISOString(),
+      discount: calculateDiscount(product)
     });
 }
 
-// Renderiza los productos en el contenedor del catálogo
-function renderProducts(productsToRender) {
-  const container = document.getElementById('catalogo-container');
-  if (!container) return; // Asegúrate de que el contenedor existe
-  container.innerHTML = ''; // Limpiar el contenedor antes de añadir productos
-
-  if (productsToRender.length === 0) {
-    container.innerHTML = '<p class="no-products-found">No se encontraron productos en esta categoría.</p>';
-    return;
-  }
-
-  productsToRender.forEach(product => {
-    const productCard = document.createElement('div');
-    productCard.className = 'product-card';
-    productCard.innerHTML = `
-      <img src="${product.imgUrl}" alt="${product.descripcion}">
-      <div class="product-info">
-        <h3>${product.descripcion}</h3>
-        <p class="product-type">Tipo: ${product.tipo}</p>
-        <p class="product-price">$${parseFloat(product.precio).toLocaleString('es-AR', { minimumFractionDigits: 2, maximumFractionDigits: 2 })}</p>
-        ${product.descuento ? `<p class="product-discount">Descuento: ${product.descuento}</p>` : ''}
-        <div class="actions">
-          <button class="add-to-cart-btn" onclick='addToCart(${JSON.stringify(product)})'>
-            ${['Ramos','Plantas'].includes(product.categoria) ? 'Añadir al Carrito' : 'Consultar'}
-          </button>
-          <button class="add-to-wishlist-btn" onclick='addToWishlist(${JSON.stringify(product)})'>
-            <i class="fas fa-heart"></i>
-          </button>
-        </div>
-      </div>
-    `;
-    container.appendChild(productCard);
-  });
-}
-
-// Actualizar el carrito
-function updateCartSummary() {
-    const cartSummary = document.getElementById('cart-summary');
-    if (!cartSummary) return;
+// Actualizar puntos del usuario
+updateUserPoints(product.price);
+  
+localStorage.setItem('cart', JSON.stringify(cartItems));
+updateCartIcon();
+showNotification(`"${product.descripcion}" añadido al carrito.`, 'success');
+  
+// Actualizar resumen del carrito
+updateCartSummary();
 
     const totalItems = cartItems.reduce((sum, item) => sum + item.quantity, 0);
     const totalAmount = cartItems.reduce((sum, item) => 
@@ -421,3 +377,126 @@ document.addEventListener('DOMContentLoaded', () => {
         renderCart();
     }
 });
+
+// === FUNCIONES DE FILTRADO Y RENDERIZADO ===
+
+// Inicializar filtros
+function initializeFilters() {
+    // Crear filtros de categoría
+    const categoryFilters = document.querySelector('.category-filters');
+    if (categoryFilters) {
+        categoryFilters.innerHTML = `
+            <button onclick="filterProducts('Todos')" class="active">Todos</button>
+            ${CONFIG.filters.categories.map(cat => `
+                <button onclick="filterProducts('${cat}')">${cat}</button>
+            `).join('')}
+        `;
+    }
+
+    // Crear filtros de tipo
+    const typeFilters = document.querySelector('.type-filters');
+    if (typeFilters) {
+        // Obtener todos los tipos únicos
+        const allTypes = Array.from(new Set(allProducts.flatMap(p => p.tipo ? p.tipo.split(', ') : [])));
+        typeFilters.innerHTML = `
+            <button onclick="filterProducts('', 'Todos')" class="active">Todos</button>
+            ${allTypes.map(tipo => `
+                <button onclick="filterProducts('', '${tipo}')">${tipo}</button>
+            `).join('')}
+        `;
+    }
+}
+
+// Filtra los productos por categoría y tipo
+function filterProducts(category = 'Todos', tipo = 'Todos') {
+    try {
+        let filteredProducts = allProducts;
+        
+        if (category !== 'Todos') {
+            filteredProducts = filteredProducts.filter(product => 
+                product.categoria && product.categoria.toLowerCase() === category.toLowerCase()
+            );
+        }
+        
+        if (tipo !== 'Todos') {
+            // Buscar en la cadena de tipos separados por comas
+            filteredProducts = filteredProducts.filter(product => 
+                product.tipo && product.tipo.toLowerCase().includes(tipo.toLowerCase())
+            );
+        }
+        
+        renderProducts(filteredProducts);
+        
+        // Actualizar clase activa en los botones de filtro
+        document.querySelectorAll('.category-filters button').forEach(btn => {
+            btn.classList.remove('active');
+            if (btn.textContent === category || (category === 'Todos' && btn.textContent === 'Todos')) {
+                btn.classList.add('active');
+            }
+        });
+        
+        // Actualizar clase activa en los filtros de tipo
+        document.querySelectorAll('.type-filters button').forEach(btn => {
+            btn.classList.remove('active');
+            if (btn.textContent === tipo || (tipo === 'Todos' && btn.textContent === 'Todos')) {
+                btn.classList.add('active');
+            }
+        });
+    } catch (error) {
+        console.error('Error al filtrar productos:', error);
+        renderProducts([]);
+        showNotification('Error al filtrar productos. Por favor, inténtelo más tarde.', 'error');
+    }
+}
+
+// Renderiza los productos en el contenedor del catálogo
+function renderProducts(productsToRender) {
+    try {
+        const container = document.getElementById('catalogo-container');
+        if (!container) return;
+        
+        container.innerHTML = '';
+        
+        if (!productsToRender || productsToRender.length === 0) {
+            container.innerHTML = `
+                <div class="no-products-container">
+                    <i class="fas fa-flower"></i>
+                    <p class="no-products-found">No se encontraron productos en esta categoría.</p>
+                    <p class="no-products-subtext">Por favor, intenta con otra categoría o tipo de flor.</p>
+                </div>
+            `;
+            return;
+        }
+        
+        productsToRender.forEach(product => {
+            const productCard = document.createElement('div');
+            productCard.className = 'product-card';
+            productCard.innerHTML = `
+                <img src="${product.imgUrl || 'img/default-product.jpg'}" alt="${product.descripcion || 'Producto'}" class="product-image">
+                <div class="product-info">
+                    <h3 class="product-title">${product.descripcion || 'Producto sin nombre'}</h3>
+                    <p class="product-type">Tipo: ${product.tipo || 'Sin especificar'}</p>
+                    <p class="product-price">$${parseFloat(product.precio || 0).toLocaleString('es-AR', { minimumFractionDigits: 2, maximumFractionDigits: 2 })}</p>
+                    ${product.descuento ? `<p class="product-discount">Descuento: ${product.descuento}</p>` : ''}
+                    <div class="actions">
+                        <button class="add-to-cart-btn" onclick='addToCart(${JSON.stringify(product)})'>
+                            ${['Ramos','Plantas'].includes(product.categoria) ? 'Añadir al Carrito' : 'Consultar'}
+                        </button>
+                        <button class="add-to-wishlist-btn" onclick='addToWishlist(${JSON.stringify(product)})'>
+                            <i class="fas fa-heart"></i>
+                        </button>
+                    </div>
+                </div>
+            `;
+            container.appendChild(productCard);
+        });
+    } catch (error) {
+        console.error('Error al renderizar productos:', error);
+        container.innerHTML = `
+            <div class="error-container">
+                <i class="fas fa-exclamation-triangle"></i>
+                <p class="error-message">Error al cargar los productos. Por favor, inténtelo más tarde.</p>
+            </div>
+        `;
+    }
+}
