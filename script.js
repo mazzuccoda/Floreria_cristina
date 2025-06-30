@@ -1,5 +1,46 @@
 // script.js
-import CONFIG from './config.js';
+// Configuración global
+const CONFIG = {
+    discounts: {
+        minQuantity: 3,
+        percentage: 10,
+        combos: {
+            'Ramos': {
+                '3': 10,
+                '5': 15,
+                '10': 20
+            },
+            'Plantas': {
+                '2': 5,
+                '4': 10,
+                '6': 15
+            }
+        }
+    },
+    rewards: {
+        pointsPerDollar: 1,
+        pointsToDiscount: 100
+    },
+    delivery: {
+        baseCost: 150,
+        freeDeliveryThreshold: 1000
+    },
+    filters: {
+        minPrice: 0,
+        maxPrice: 5000,
+        categories: ['Ramos', 'Plantas', 'Novias', 'Iglesias', 'Fiestas']
+    },
+    subscriptions: {
+        weekly: {
+            price: 800,
+            description: 'Ramo semanal de flores frescas'
+        },
+        monthly: {
+            price: 3000,
+            description: 'Ramo mensual de flores frescas'
+        }
+    }
+};
 
 // === VARIABLES GLOBALES ===
 let cartItems = JSON.parse(localStorage.getItem('cart')) || []; // Carrito de compras
