@@ -52,25 +52,37 @@ let savedCarts = JSON.parse(localStorage.getItem('savedCarts')) || {}; // Carrit
 // === FUNCIONES DE CARGA DE DATOS ===
 async function loadProducts() {
     try {
-        const response = await fetch('data/productos.json');
-        const data = await response.json();
-        allProducts = data.productos;
+        // URL de la hoja de Google Sheets en formato JSON
+        const googleSheetUrl = 'https://docs.google.com/spreadsheets/d/1cUDaB8ZKBL-hzG7dYJFUpx7E4roImbej6MVW7F-15LA/gviz/tq?tqx=out:json&tq=SELECT%20*';
+        
+        const response = await fetch(googleSheetUrl);
+        if (!response.ok) throw new Error('Error al cargar datos');
+        
+        const text = await response.text();
+        const data = JSON.parse(text.substring(47).slice(0, -2));
+        
+        allProducts = data.table.rows.map(row => {
+            const values = row.c.map(cell => cell ? cell.v : '');
+            // Obtener todos los tipos no vacíos
+            const tipos = values.slice(9).filter(tipo => tipo).join(', ');
+            return {
+                id: values[0],
+                categoria: values[2],
+                tipo: tipos,
+                descripcion: values[1],
+                precio: values[3],
+                imgUrl: values[4],
+                descuento: values[5]
+            };
+        });
+        
         renderProducts(allProducts);
-        return allProducts;
+        initializeFilters();
     } catch (error) {
         console.error('Error al cargar productos:', error);
-        throw error;
-    }
-}
-
-// === FUNCIONES DE CARRITO ===
-
-// Función para actualizar el contador del carrito en el icono del header
-function updateCartIcon() {
-    const cartCountElement = document.getElementById('cart-count');
-    if (cartCountElement) {
-        const totalItems = cartItems.reduce((sum, item) => sum + item.quantity, 0);
-        cartCountElement.textContent = totalItems;
+        allProducts = [];
+        renderProducts([]);
+        showNotification('Error al cargar los productos. Por favor, inténtelo más tarde.', 'error');
     }
 }
 
