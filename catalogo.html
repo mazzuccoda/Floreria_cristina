@@ -6,7 +6,49 @@
   <title>Catálogo - Florería Cristina</title>
   <link href="https://fonts.googleapis.com/css2?family=Quicksand:wght@400;600&display=swap" rel="stylesheet">
   <link rel="stylesheet" href="style.css" />
-  <script src="script.js"></script>
+  <script src="notifications.js"></script>
+<script src="script.js"></script>
+<script>
+    // Cargar productos al inicio
+    document.addEventListener('DOMContentLoaded', () => {
+        loadProducts();
+        // Inicializar carrito
+        loadCart();
+        // Inicializar wishlist
+        loadWishlist();
+    });
+
+    // Función para filtrar productos
+    function filterProducts(category) {
+        const filteredProducts = category === 'Todos' ? allProducts : allProducts.filter(p => p.categoria === category);
+        renderProducts(filteredProducts);
+        // Actualizar clase activa en los botones de filtro
+        document.querySelectorAll('.category-filters button').forEach(btn => {
+            btn.classList.remove('active');
+            if (btn.textContent === category || (category === 'Todos' && btn.textContent === 'Todos')) {
+                btn.classList.add('active');
+            }
+        });
+    }
+
+    // Función para mostrar/ocultar modal de wishlist
+    function toggleWishlistModal() {
+        const modal = document.getElementById('wishlist-modal');
+        modal.style.display = modal.style.display === 'block' ? 'none' : 'block';
+        if (modal.style.display === 'block') {
+            loadWishlist();
+        }
+    }
+
+    // Función para guardar carrito
+    function saveCartItem(index) {
+        const cartItem = cartItems[index];
+        const savedCartId = 'saved-cart-' + Date.now();
+        savedCarts[savedCartId] = cartItem;
+        localStorage.setItem('savedCarts', JSON.stringify(savedCarts));
+        showNotification('Carrito guardado exitosamente', 'success');
+    }
+</script>
 </head>
 <body>
   <header>
@@ -20,7 +62,7 @@
 
   <main>
     <div class="category-filters">
-        <button onclick="filterProducts('Todos')">Todos</button>
+        <button onclick="filterProducts('Todos')" class="active">Todos</button>
         <button onclick="filterProducts('Ramos')">Ramos de Flores</button>
         <button onclick="filterProducts('Plantas')">Plantas</button>
         <button onclick="filterProducts('Novias')">Ramos de Novia</button>
@@ -29,7 +71,37 @@
     </div>
 
     <div id="catalogo-container" class="product-grid">
+        <!-- Los productos se cargarán dinámicamente aquí -->
+    </div>
+
+    <!-- Modal de Lista de Deseos -->
+    <div class="modal" id="wishlist-modal">
+        <div class="modal-content">
+            <span class="close-button" onclick="toggleWishlistModal()">&times;</span>
+            <h2>Lista de Deseos</h2>
+            <div id="wishlist-items" class="wishlist-items"></div>
+            <button onclick="clearWishlist()" class="clear-wishlist-button">Vaciar Lista</button>
         </div>
+    </div>
+
+    <!-- Modal del Carrito -->
+    <div class="modal" id="cart-modal">
+        <div class="modal-content">
+            <span class="close-button" onclick="toggleCartModal()">&times;</span>
+            <h2>Tu Carrito</h2>
+            <div id="cart-items" class="cart-items"></div>
+            <div class="cart-summary" id="cart-summary"></div>
+            <div class="checkout-buttons">
+                <a href="carrito.html" class="btn-whatsapp">
+                    <i class="fab fa-whatsapp"></i> Finalizar Compra
+                </a>
+                <button onclick="checkoutCart()" class="btn-mercadopago">
+                    <i class="fas fa-credit-card"></i> Pagar con Mercado Pago
+                </button>
+                <button onclick="clearCart()" class="clear-cart-button">Vaciar Carrito</button>
+            </div>
+        </div>
+    </div>
   </main>
 
   <div class="modal" id="cart-modal">

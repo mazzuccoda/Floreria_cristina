@@ -1,0 +1,44 @@
+{
+    "productos": [
+        {
+            "id": "RAM001",
+            "categoria": "Ramos",
+            "descripcion": "Ramo Clásico Rosas",
+            "precio": 800,
+            "imgUrl": "https://i.postimg.cc/FRXNHcTQ/20250427-103645.jpg",
+            "descuento": "10%"
+        },
+        {
+            "id": "RAM002",
+            "categoria": "Ramos",
+            "descripcion": "Ramo de Gardenias",
+            "precio": 1200,
+            "imgUrl": "https://i.postimg.cc/05GKvDpY/IMG-20201210-WA0015.jpg",
+            "descuento": "15%"
+        },
+        {
+            "id": "PLA001",
+            "categoria": "Plantas",
+            "descripcion": "Planta de interior",
+            "precio": 300,
+            "imgUrl": "https://i.postimg.cc/zXZCqqbh/20241204-082503.jpg",
+            "descuento": ""
+        },
+        {
+            "id": "NOV001",
+            "categoria": "Novias",
+            "descripcion": "Ramo de novia clásico",
+            "precio": 1500,
+            "imgUrl": "https://i.postimg.cc/BZ27GYYm/20181006-201056.jpg",
+            "descuento": ""
+        },
+        {
+            "id": "IGL001",
+            "categoria": "Iglesias",
+            "descripcion": "Arreglo para altar",
+            "precio": 0,
+            "imgUrl": "https://i.postimg.cc/BZ8L8R9C/20210109-122057.jpg",
+            "descuento": ""
+        }
+    ]
+}

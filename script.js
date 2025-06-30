@@ -3,10 +3,22 @@ import CONFIG from './config.js';
 
 // === VARIABLES GLOBALES ===
 let cartItems = JSON.parse(localStorage.getItem('cart')) || []; // Carrito de compras
-let allProducts = []; // Para almacenar todos los productos cargados desde Google Sheets
+let allProducts = []; // Para almacenar todos los productos
 let userPoints = parseInt(localStorage.getItem('userPoints')) || 0; // Sistema de puntos
 let wishList = JSON.parse(localStorage.getItem('wishList')) || []; // Lista de deseos
 let savedCarts = JSON.parse(localStorage.getItem('savedCarts')) || {}; // Carritos guardados
+
+// === FUNCIONES DE CARGA DE DATOS ===
+async function loadProducts() {
+    try {
+        const response = await fetch('data/productos.json');
+        const data = await response.json();
+        allProducts = data.productos;
+        renderProducts(allProducts);
+    } catch (error) {
+        console.error('Error al cargar productos:', error);
+    }
+}
 
 // === FUNCIONES DE CARRITO ===
 
@@ -18,6 +30,17 @@ function updateCartIcon() {
   if (cartCountElement) {
     const totalItems = cartItems.reduce((sum, item) => sum + item.quantity, 0);
     cartCountElement.textContent = totalItems;
+  }
+}
+
+// Función para mostrar notificaciones
+function showNotification(message, type = 'info') {
+  // Verificar si existe la función global de notificaciones
+  if (typeof window.showNotification === 'function') {
+    window.showNotification(message, type);
+  } else {
+    // Si no existe, usar alert como fallback
+    alert(message);
   }
 }
 
@@ -40,8 +63,6 @@ function addToCart(product) {
   if (existingProduct) {
     existingProduct.quantity++;
   } else {
-    // Asegúrate de que el 'image' se guarde para el carrito.
-    // Usamos product.imgUrl porque así lo llamas en tus datos de Google Sheets.
     cartItems.push({ 
       ...product, 
       name: product.descripcion, 
@@ -52,7 +73,7 @@ function addToCart(product) {
       discount: calculateDiscount(product)
     });
   }
-  
+
   // Actualizar puntos del usuario
   updateUserPoints(product.price);
   
