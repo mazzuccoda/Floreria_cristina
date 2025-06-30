@@ -50,41 +50,209 @@ let wishList = JSON.parse(localStorage.getItem('wishList')) || []; // Lista de d
 let savedCarts = JSON.parse(localStorage.getItem('savedCarts')) || {}; // Carritos guardados
 
 // === FUNCIONES DE CARGA DE DATOS ===
-async function loadProducts() {
+// Datos estáticos de productos
+const staticProducts = [
+    {
+        id: "1",
+        categoria: "Ramos",
+        tipo: "Clásico",
+        descripcion: "Ramo de rosas rojas",
+        precio: 1500,
+        imgUrl: "img/ramo-rosas.jpg",
+        descuento: null
+    },
+    {
+        id: "2",
+        categoria: "Plantas",
+        tipo: "Interior",
+        descripcion: "Planta de suculenta",
+        precio: 800,
+        imgUrl: "img/planta-suculenta.jpg",
+        descuento: 10
+    },
+    {
+        id: "3",
+        categoria: "Novias",
+        tipo: "Bouquet",
+        descripcion: "Bouquet de novia con rosas y baby's breath",
+        precio: 2500,
+        imgUrl: "img/bouquet-novia.jpg",
+        descuento: null
+    },
+    {
+        id: "4",
+        categoria: "Iglesias",
+        tipo: "Arreglo",
+        descripcion: "Arreglo para altar con lirios y orquídeas",
+        precio: 3500,
+        imgUrl: "img/arreglo-altar.jpg",
+        descuento: 15
+    },
+    {
+        id: "5",
+        categoria: "Fiestas",
+        tipo: "Decoración",
+        descripcion: "Centro de mesa con flores de temporada",
+        precio: 1800,
+        imgUrl: "img/centro-mesa.jpg",
+        descuento: null
+    }
+];
+
+// Función para cargar productos
+function loadProducts() {
+    return new Promise((resolve, reject) => {
+        try {
+            // Usar datos estáticos
+            allProducts = staticProducts;
+            
+            // Renderizar productos
+            renderProducts(allProducts);
+            initializeFilters();
+            
+            // Mostrar mensaje de éxito
+            showNotification('Productos cargados exitosamente', 'success');
+            resolve();
+            
+        } catch (error) {
+            console.error('Error al cargar productos:', error);
+            
+            // Mostrar error en la página
+            const container = document.getElementById('catalogo-container');
+            if (container) {
+                container.innerHTML = `
+                    <div class="error-container">
+                        <i class="fas fa-exclamation-triangle"></i>
+                        <p class="error-message">Error al cargar los productos</p>
+                        <p class="error-details">${error.message}</p>
+                        <button onclick="window.location.reload()" class="retry-button">
+                            <i class="fas fa-sync"></i> Intentar nuevamente
+                        </button>
+                    </div>
+                `;
+            }
+            
+            // Mostrar notificación
+            showNotification('Error al cargar los productos. Por favor, inténtelo más tarde.', 'error');
+            reject(error);
+        }
+    });
+}
+
+// Exportar la función para que esté disponible en el HTML
+window.loadProducts = loadProducts;
+
+// Función para renderizar los productos en el catálogo
+function renderProducts(products) {
     try {
-        // URL de la hoja de Google Sheets en formato JSON
-        const googleSheetUrl = 'https://docs.google.com/spreadsheets/d/1cUDaB8ZKBL-hzG7dYJFUpx7E4roImbej6MVW7F-15LA/gviz/tq?tqx=out:json&tq=SELECT%20*';
+        const container = document.getElementById('catalogo-container');
+        if (!container) {
+            throw new Error('No se encontró el contenedor de productos');
+        }
+
+        if (!products || products.length === 0) {
+            container.innerHTML = `
+                <div class="empty-state">
+                    <i class="fas fa-shopping-cart"></i>
+                    <p>No hay productos disponibles en este momento</p>
+                </div>
+            `;
+            return;
+        }
+
+        container.innerHTML = '';
         
-        const response = await fetch(googleSheetUrl);
-        if (!response.ok) throw new Error('Error al cargar datos');
-        
-        const text = await response.text();
-        const data = JSON.parse(text.substring(47).slice(0, -2));
-        
-        allProducts = data.table.rows.map(row => {
-            const values = row.c.map(cell => cell ? cell.v : '');
-            // Obtener todos los tipos no vacíos
-            const tipos = values.slice(9).filter(tipo => tipo).join(', ');
-            return {
-                id: values[0],
-                categoria: values[2],
-                tipo: tipos,
-                descripcion: values[1],
-                precio: values[3],
-                imgUrl: values[4],
-                descuento: values[5]
-            };
+        products.forEach(product => {
+            const productHtml = `
+                <div class="product-card">
+                    <div class="product-image">
+                        <img src="${product.imgUrl}" alt="${product.descripcion}">
+                        ${product.descuento ? `<div class="discount-badge">-${product.descuento}%</div>` : ''}
+                    </div>
+                    <div class="product-info">
+                        <h3>${product.descripcion}</h3>
+                        <p class="product-type">${product.tipo || 'Sin especificar'}</p>
+                        <div class="product-price">
+                            <span class="price">$${product.precio.toLocaleString('es-AR')}</span>
+                            ${product.descuento ? `
+                                <span class="original-price">$${(product.precio * (1 + parseFloat(product.descuento) / 100)).toLocaleString('es-AR')}</span>
+                            ` : ''}
+                        </div>
+                        <div class="product-actions">
+                            <button onclick="addToCart(${JSON.stringify(product)})" class="add-to-cart">
+                                <i class="fas fa-cart-plus"></i> Añadir al Carrito
+                            </button>
+                            <button onclick="consultarProducto(${JSON.stringify(product)})" class="consult-btn">
+                                <i class="fas fa-comment"></i> Consultar
+                            </button>
+                        </div>
+                    </div>
+                </div>
+            `;
+            container.innerHTML += productHtml;
         });
-        
-        renderProducts(allProducts);
-        initializeFilters();
     } catch (error) {
-        console.error('Error al cargar productos:', error);
-        allProducts = [];
-        renderProducts([]);
-        showNotification('Error al cargar los productos. Por favor, inténtelo más tarde.', 'error');
+        console.error('Error al renderizar productos:', error);
+        const container = document.getElementById('catalogo-container');
+        if (container) {
+            container.innerHTML = `
+                <div class="error-state">
+                    <i class="fas fa-exclamation-triangle"></i>
+                    <p>Error al renderizar los productos: ${error.message}</p>
+                </div>
+            `;
+        }
     }
 }
+// Función para inicializar los filtros
+function initializeFilters() {
+    try {
+        const filterContainer = document.querySelector('.category-filters');
+        if (!filterContainer) return;
+
+        // Obtener categorías únicas de los productos
+        const categories = [...new Set(staticProducts.map(p => p.categoria))];
+        
+        // Crear botones de filtro
+        const filterButtons = categories.map(category => 
+            `<button onclick="filterProducts('${category}')" class="filter-btn">${category}</button>`
+        ).join('');
+        
+        // Agregar botón de 'Todos' al principio
+        filterContainer.innerHTML = `
+            <button onclick="filterProducts('Todos')" class="filter-btn active">Todos</button>
+            ${filterButtons}
+        `;
+        
+    } catch (error) {
+        console.error('Error al inicializar filtros:', error);
+    }
+}
+
+// Función para filtrar productos por categoría
+function filterProducts(category) {
+    try {
+        let filteredProducts = category === 'Todos' 
+            ? staticProducts 
+            : staticProducts.filter(p => p.categoria === category);
+        
+        renderProducts(filteredProducts);
+        
+        // Actualizar clase activa en los botones de filtro
+        document.querySelectorAll('.filter-btn').forEach(btn => {
+            btn.classList.remove('active');
+            if (btn.textContent === category || (category === 'Todos' && btn.textContent === 'Todos')) {
+                btn.classList.add('active');
+            }
+        });
+        
+    } catch (error) {
+        console.error('Error al filtrar productos:', error);
+        showNotification('Error al filtrar productos', 'error');
+    }
+}
+        
+// Función para mostrar notificaciones
 
 // Función para mostrar notificaciones
 function showNotification(message, type = 'info') {
@@ -307,29 +475,7 @@ function clearCart() {
     // if (modal) modal.style.display = 'none';
 }
 
-const existingProduct = cartItems.find(item => item.id === product.id);
-if (existingProduct) {
-    existingProduct.quantity++;
-} else {
-    cartItems.push({ 
-      ...product, 
-      name: product.descripcion, 
-      price: parseFloat(product.precio), 
-      image: product.imgUrl, 
-      quantity: 1,
-      dateAdded: new Date().toISOString(),
-      discount: calculateDiscount(product)
-    });
-}
-
-// Actualizar puntos del usuario
-updateUserPoints(product.price);
-  
-localStorage.setItem('cart', JSON.stringify(cartItems));
-updateCartIcon();
-showNotification(`"${product.descripcion}" añadido al carrito.`, 'success');
-  
-// Actualizar resumen del carrito
+// Esta sección de código estaba duplicada y fue eliminada para mantener el código limpio y organizado.
 updateCartSummary();
 
     const totalItems = cartItems.reduce((sum, item) => sum + item.quantity, 0);

@@ -1,0 +1,49 @@
+{
+    "productos": [
+        {
+            "id": "1",
+            "categoria": "Ramos",
+            "tipo": "Clásico",
+            "descripcion": "Ramo de rosas rojas",
+            "precio": 1500,
+            "imgUrl": "img/ramo-rosas.jpg",
+            "descuento": null
+        },
+        {
+            "id": "2",
+            "categoria": "Plantas",
+            "tipo": "Interior",
+            "descripcion": "Planta de suculenta",
+            "precio": 800,
+            "imgUrl": "img/planta-suculenta.jpg",
+            "descuento": 10
+        },
+        {
+            "id": "3",
+            "categoria": "Novias",
+            "tipo": "Bouquet",
+            "descripcion": "Bouquet de novia con rosas y baby's breath",
+            "precio": 2500,
+            "imgUrl": "img/bouquet-novia.jpg",
+            "descuento": null
+        },
+        {
+            "id": "4",
+            "categoria": "Iglesias",
+            "tipo": "Arreglo",
+            "descripcion": "Arreglo para altar con lirios y orquídeas",
+            "precio": 3500,
+            "imgUrl": "img/arreglo-altar.jpg",
+            "descuento": 15
+        },
+        {
+            "id": "5",
+            "categoria": "Fiestas",
+            "tipo": "Decoración",
+            "descripcion": "Centro de mesa con flores de temporada",
+            "precio": 1800,
+            "imgUrl": "img/centro-mesa.jpg",
+            "descuento": null
+        }
+    ]
+}

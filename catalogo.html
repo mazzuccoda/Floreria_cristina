@@ -1,130 +1,43 @@
 <!DOCTYPE html>
 <html lang="es">
 <head>
-  <meta charset="UTF-8" />
-  <meta name="viewport" content="width=device-width,initial-scale=1.0" />
-  <title>Catálogo - Florería Cristina</title>
-  <link href="https://fonts.googleapis.com/css2?family=Quicksand:wght@400;600&display=swap" rel="stylesheet">
-  <link rel="stylesheet" href="style.css" />
-  <script src="notifications.js"></script>
-  <script src="script.js"></script>
-  <script>
-    // Manejar eventos de filtros
-    document.addEventListener('DOMContentLoaded', () => {
-        // Manejar filtros de categoría
-        document.querySelectorAll('.category-filters button').forEach(button => {
-            button.addEventListener('click', function() {
-                const category = this.getAttribute('data-category');
-                
-                // Actualizar clase activa
-                document.querySelectorAll('.category-filters button').forEach(btn => btn.classList.remove('active'));
-                this.classList.add('active');
-                
-                // Actualizar filtros de tipo
-                const typeButtons = document.querySelectorAll('.type-filters button');
-                typeButtons.forEach(btn => btn.classList.remove('active'));
-                typeButtons[0].classList.add('active');
-                
-                // Filtrar productos
-                filterProducts(category);
-            });
-        });
-
-        // Manejar filtros de tipo
-        document.querySelectorAll('.type-filters button').forEach(button => {
-            button.addEventListener('click', function() {
-                const type = this.getAttribute('data-type');
-                const activeCategory = document.querySelector('.category-filters .active');
-                const category = activeCategory.getAttribute('data-category');
-                
-                // Actualizar clase activa
-                document.querySelectorAll('.type-filters button').forEach(btn => btn.classList.remove('active'));
-                this.classList.add('active');
-                
-                // Filtrar productos
-                filterProducts(category, type);
-            });
-        });
-
-        // Cargar productos al inicio
-        loadProducts()
-            .then(() => {
-                loadCart();
-                loadWishlist();
-            })
-            .catch(error => {
-                console.error('Error al cargar productos:', error);
-            });
-    });
-
-    // Función para filtrar productos
-    function filterProducts(category) {
-        const filteredProducts = category === 'Todos' ? allProducts : allProducts.filter(p => p.categoria === category);
-        renderProducts(filteredProducts);
-        // Actualizar clase activa en los botones de filtro
-        document.querySelectorAll('.category-filters button').forEach(btn => {
-            btn.classList.remove('active');
-            if (btn.textContent === category || (category === 'Todos' && btn.textContent === 'Todos')) {
-                btn.classList.add('active');
-            }
-        });
-    }
-
-    // Función para mostrar/ocultar modal de wishlist
-    function toggleWishlistModal() {
-        const modal = document.getElementById('wishlist-modal');
-        modal.style.display = modal.style.display === 'block' ? 'none' : 'block';
-        if (modal.style.display === 'block') {
-            loadWishlist();
-        }
-    }
-
-    // Función para guardar carrito
-    function saveCartItem(index) {
-        const cartItem = cartItems[index];
-        const savedCartId = 'saved-cart-' + Date.now();
-        savedCarts[savedCartId] = cartItem;
-        localStorage.setItem('savedCarts', JSON.stringify(savedCarts));
-        showNotification('Carrito guardado exitosamente', 'success');
-    }
-</script>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Catálogo - Florería Cristina</title>
+    <link href="https://fonts.googleapis.com/css2?family=Quicksand:wght@400;600&display=swap" rel="stylesheet">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css">
+    <link rel="stylesheet" href="style.css">
 </head>
 <body>
-  <header>
-    <a href="index.html" class="back-to-home">← Inicio</a>
-    <img src="https://i.postimg.cc/RZ34GxdP/Logo-Crsitina.png" alt="Logo">
-    <h1>Catálogo de Productos</h1>
-    <div class="cart-summary" onclick="toggleCartModal()">
-        🛒 <span id="cart-count">0</span>
-    </div>
-  </header>
+    <header>
+        <a href="index.html" class="back-to-home">← Inicio</a>
+        <img src="https://i.postimg.cc/RZ34GxdP/Logo-Crsitina.png" alt="Logo">
+        <h1>Catálogo de Productos</h1>
+        <div class="cart-summary" onclick="toggleCartModal()">
+            🛒 <span id="cart-count">0</span>
+        </div>
+    </header>
 
-  <main>
-    <div class="filters-container">
-        <div class="category-filters">
-            <button class="active" data-category="Todos">Todos</button>
-            <button data-category="Ramos">Ramos de Flores</button>
-            <button data-category="Plantas">Plantas</button>
-            <button data-category="Novias">Ramos de Novia</button>
-            <button data-category="Iglesias">Arreglos para Iglesias</button>
-            <button data-category="Fiestas">Decoración para Fiestas</button>
+    <main>
+        <div class="filters-container">
+            <div class="category-filters">
+                <button onclick="filterProducts('Todos')" class="active">Todos</button>
+                <button onclick="filterProducts('Ramos')">Ramos de Flores</button>
+                <button onclick="filterProducts('Plantas')">Plantas</button>
+                <button onclick="filterProducts('Novias')">Ramos de Novia</button>
+                <button onclick="filterProducts('Iglesias')">Arreglos para Iglesias</button>
+                <button onclick="filterProducts('Fiestas')">Decoración para Fiestas</button>
+            </div>
+
+            <div id="type-filters" class="type-filters">
+                <button onclick="filterProducts('', 'Todos')" class="active">Todos</button>
+            </div>
         </div>
 
-        <div id="type-filters" class="type-filters">
-            <button class="active" data-type="Todos">Todos</button>
-            <button data-type="Rosas">Rosas</button>
-            <button data-type="Gardenias">Gardenias</button>
-            <button data-type="Lirios">Lirios</button>
-            <button data-type="Orquídeas">Orquídeas</button>
-            <button data-type="Interior">Interior</button>
-            <button data-type="Exterior">Exterior</button>
-            <button data-type="Clásico">Clásico</button>
+        <div id="catalogo-container" class="product-grid">
+            <!-- Los productos se cargarán dinámicamente aquí -->
         </div>
-    </div>
-
-    <div id="catalogo-container" class="product-grid">
-        <!-- Los productos se cargarán dinámicamente aquí -->
-    </div>
+    </main>
 
     <!-- Modal de Lista de Deseos -->
     <div class="modal" id="wishlist-modal">
@@ -154,35 +67,42 @@
             </div>
         </div>
     </div>
-  </main>
 
-  <div class="modal" id="cart-modal">
-    <div class="modal-content">
-      <span class="close-button" onclick="toggleCartModal()">&times;</span>
-      <h2>Tu Carrito</h2>
+    <footer>
+        <p style="text-align: center; padding: 20px; color: #777; font-size: 0.9em;">
+            &copy; 2024 Florería Cristina. Todos los derechos reservados.
+        </p>
+    </footer>
 
-      <div id="cart-items" class="cart-items"></div>
+    <!-- Scripts -->
+    <script src="notifications.js"></script>
+    <script>
+        // Función para inicializar la página
+        function initPage() {
+            console.log('Inicializando página...');
+            if (typeof loadProducts === 'function') {
+                console.log('Llamando a loadProducts...');
+                loadProducts().then(() => {
+                    console.log('Productos cargados exitosamente');
+                }).catch(error => {
+                    console.error('Error al cargar productos:', error);
+                });
+            } else {
+                console.error('La función loadProducts no está disponible');
+            }
+        }
 
-      <div class="cart-total">
-        <span>Total:</span>
-        <span id="cart-total-price">$0</span>
-      </div>
-
-      <div class="checkout-buttons">
-        <a href="carrito.html" class="btn-whatsapp">
-          <i class="fab fa-whatsapp"></i> Finalizar Compra
-        </a>
-        <a href="carrito.html" class="btn-mercadopago">
-          <i class="fas fa-credit-card"></i> Pagar con Mercado Pago
-        </a>
-        <button class="clear-cart-button" onclick="clearCart()">Vaciar Carrito</button>
-      </div>
-    </div>
-  </div>
-  <footer>
-    <p style="text-align: center; padding: 20px; color: #777; font-size: 0.9em;">
-      © 2024 Florería Cristina. Todos los derechos reservados.
-    </p>
-  </footer>
+        // Cargar script.js dinámicamente
+        const script = document.createElement('script');
+        script.src = 'script.js';
+        script.onload = function() {
+            console.log('script.js cargado correctamente');
+            initPage();
+        };
+        script.onerror = function() {
+            console.error('Error al cargar script.js');
+        };
+        document.head.appendChild(script);
+    </script>
 </body>
 </html>
