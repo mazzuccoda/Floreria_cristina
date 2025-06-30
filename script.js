@@ -297,6 +297,33 @@ function clearCart() {
 
 // === FUNCIONES DE CARGA Y FILTRADO DE PRODUCTOS (Para catalogo.html) ===
 
+// Filtra los productos por categoría y tipo
+function filterProducts(category, tipo = '') {
+    let filteredProducts = category === 'Todos' ? allProducts : allProducts.filter(p => p.categoria === category);
+    
+    if (tipo && tipo !== 'Todos') {
+        filteredProducts = filteredProducts.filter(p => p.tipo === tipo);
+    }
+    
+    renderProducts(filteredProducts);
+    
+    // Actualizar clase activa en los botones de filtro
+    document.querySelectorAll('.category-filters button').forEach(btn => {
+        btn.classList.remove('active');
+        if (btn.textContent === category || (category === 'Todos' && btn.textContent === 'Todos')) {
+            btn.classList.add('active');
+        }
+    });
+    
+    // Actualizar clase activa en los filtros de tipo
+    document.querySelectorAll('.type-filters button').forEach(btn => {
+        btn.classList.remove('active');
+        if (btn.textContent === tipo || (tipo === '' && btn.textContent === 'Todos')) {
+            btn.classList.add('active');
+        }
+    });
+}
+
 // Renderiza los productos en el contenedor del catálogo
 function renderProducts(productsToRender) {
   const container = document.getElementById('catalogo-container');
@@ -315,25 +342,49 @@ function renderProducts(productsToRender) {
       <img src="${product.imgUrl}" alt="${product.descripcion}">
       <div class="product-info">
         <h3>${product.descripcion}</h3>
+        <p class="product-type">Tipo: ${product.tipo}</p>
         <p class="product-price">$${parseFloat(product.precio).toLocaleString('es-AR', { minimumFractionDigits: 2, maximumFractionDigits: 2 })}</p>
         ${product.descuento ? `<p class="product-discount">Descuento: ${product.descuento}</p>` : ''}
-        <button class="add-to-cart-btn" onclick='addToCart(${JSON.stringify(product)})'>
-          ${['Ramos','Plantas'].includes(product.categoria) ? 'Añadir al Carrito' : 'Consultar'}
-        </button>
+        <div class="actions">
+          <button class="add-to-cart-btn" onclick='addToCart(${JSON.stringify(product)})'>
+            ${['Ramos','Plantas'].includes(product.categoria) ? 'Añadir al Carrito' : 'Consultar'}
+          </button>
+          <button class="add-to-wishlist-btn" onclick='addToWishlist(${JSON.stringify(product)})'>
+            <i class="fas fa-heart"></i>
+          </button>
+        </div>
       </div>
     `;
     container.appendChild(productCard);
   });
 }
 
-// Filtra los productos por categoría
-function filterProducts(category) {
-  if (category === 'Todos') {
-    renderProducts(allProducts);
-  } else {
-    const filtered = allProducts.filter(p => p.categoria === category);
-    renderProducts(filtered);
-  }
+// Actualizar el carrito
+function updateCartSummary() {
+    const cartSummary = document.getElementById('cart-summary');
+    if (!cartSummary) return;
+
+    const totalItems = cartItems.reduce((sum, item) => sum + item.quantity, 0);
+    const totalAmount = cartItems.reduce((sum, item) => 
+        sum + (item.price * item.quantity * (1 - (item.discount || 0) / 100)), 0
+    );
+
+    const summaryHtml = `
+        <div class="summary-item">
+            <span>Total de productos:</span>
+            <span>${totalItems} items</span>
+        </div>
+        <div class="summary-item">
+            <span>Subtotal:</span>
+            <span>$${totalAmount.toLocaleString('es-AR', { minimumFractionDigits: 2, maximumFractionDigits: 2 })}</span>
+        </div>
+        <div class="summary-item total">
+            <span>Total a pagar:</span>
+            <span>$${totalAmount.toLocaleString('es-AR', { minimumFractionDigits: 2, maximumFractionDigits: 2 })}</span>
+        </div>
+    `;
+
+    cartSummary.innerHTML = summaryHtml;
 }
 
 // === Carga de datos al cargar el DOM ===

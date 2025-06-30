@@ -3,6 +3,7 @@
         {
             "id": "RAM001",
             "categoria": "Ramos",
+            "tipo": "Rosas",
             "descripcion": "Ramo Clásico Rosas",
             "precio": 800,
             "imgUrl": "https://i.postimg.cc/FRXNHcTQ/20250427-103645.jpg",
@@ -11,22 +12,52 @@
         {
             "id": "RAM002",
             "categoria": "Ramos",
+            "tipo": "Gardenias",
             "descripcion": "Ramo de Gardenias",
             "precio": 1200,
             "imgUrl": "https://i.postimg.cc/05GKvDpY/IMG-20201210-WA0015.jpg",
             "descuento": "15%"
         },
         {
+            "id": "RAM003",
+            "categoria": "Ramos",
+            "tipo": "Lirios",
+            "descripcion": "Ramo de Lirios",
+            "precio": 900,
+            "imgUrl": "https://i.postimg.cc/05GKvDpY/IMG-20201210-WA0015.jpg",
+            "descuento": "10%"
+        },
+        {
+            "id": "RAM004",
+            "categoria": "Ramos",
+            "tipo": "Orquídeas",
+            "descripcion": "Ramo de Orquídeas",
+            "precio": 1500,
+            "imgUrl": "https://i.postimg.cc/05GKvDpY/IMG-20201210-WA0015.jpg",
+            "descuento": "20%"
+        },
+        {
             "id": "PLA001",
             "categoria": "Plantas",
+            "tipo": "Interior",
             "descripcion": "Planta de interior",
             "precio": 300,
             "imgUrl": "https://i.postimg.cc/zXZCqqbh/20241204-082503.jpg",
             "descuento": ""
         },
         {
+            "id": "PLA002",
+            "categoria": "Plantas",
+            "tipo": "Exterior",
+            "descripcion": "Planta de exterior",
+            "precio": 450,
+            "imgUrl": "https://i.postimg.cc/zXZCqqbh/20241204-082503.jpg",
+            "descuento": "5%"
+        },
+        {
             "id": "NOV001",
             "categoria": "Novias",
+            "tipo": "Clásico",
             "descripcion": "Ramo de novia clásico",
             "precio": 1500,
             "imgUrl": "https://i.postimg.cc/BZ27GYYm/20181006-201056.jpg",
@@ -35,6 +66,7 @@
         {
             "id": "IGL001",
             "categoria": "Iglesias",
+            "tipo": "Altar",
             "descripcion": "Arreglo para altar",
             "precio": 0,
             "imgUrl": "https://i.postimg.cc/BZ8L8R9C/20210109-122057.jpg",

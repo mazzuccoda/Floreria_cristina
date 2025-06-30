@@ -70,6 +70,18 @@
         <button onclick="filterProducts('Fiestas')">Decoración para Fiestas</button>
     </div>
 
+    <!-- Filtros de tipo -->
+    <div id="type-filters" class="type-filters">
+        <button onclick="filterProducts(document.querySelector('.category-filters button.active').textContent, 'Todos')" class="active">Todos</button>
+        <button onclick="filterProducts('Ramos', 'Rosas')">Rosas</button>
+        <button onclick="filterProducts('Ramos', 'Gardenias')">Gardenias</button>
+        <button onclick="filterProducts('Ramos', 'Lirios')">Lirios</button>
+        <button onclick="filterProducts('Ramos', 'Orquídeas')">Orquídeas</button>
+        <button onclick="filterProducts('Plantas', 'Interior')">Interior</button>
+        <button onclick="filterProducts('Plantas', 'Exterior')">Exterior</button>
+        <button onclick="filterProducts('Novias', 'Clásico')">Clásico</button>
+    </div>
+
     <div id="catalogo-container" class="product-grid">
         <!-- Los productos se cargarán dinámicamente aquí -->
     </div>
