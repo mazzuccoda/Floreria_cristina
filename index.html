@@ -1,0 +1,252 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width,initial-scale=1.0" />
+  <meta name="description" content="Ramos, plantas y decoración floral con entrega el mismo día en Tucumán. Realizá tu pedido fácilmente. Suscripción a envíos semanales y mensuales disponibles.">
+  <link href="https://fonts.googleapis.com/css2?family=Quicksand:wght@400;600&display=swap" rel="stylesheet">
+  <link rel="stylesheet" href="style.css" />
+  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css">
+  <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/swiper@10/swiper-bundle.min.css">
+  <!-- PWA manifest -->
+  <link rel="manifest" href="manifest.json">
+  <meta name="theme-color" content="#4c9a58">
+  <link rel="apple-touch-icon" href="https://i.postimg.cc/RZ34GxdP/Logo-Crsitina.png">
+  <meta name="apple-mobile-web-app-capable" content="yes">
+  <meta name="apple-mobile-web-app-status-bar-style" content="default">
+  <meta name="apple-mobile-web-app-title" content="Florería Cristina">
+  <meta name="application-name" content="Florería Cristina">
+  <meta name="msapplication-TileColor" content="#4c9a58">
+  <meta name="msapplication-config" content="browserconfig.xml">
+  <meta name="msapplication-navbutton-color" content="#4c9a58">
+  <meta name="msapplication-tap-highlight" content="no">
+</head>
+<body>
+
+  <!-- Barra de navegación -->
+  <header>
+    <img src="https://i.postimg.cc/RZ34GxdP/Logo-Crsitina.png" alt="Logo Cristina">
+    <nav>
+      <a href="index.html">Inicio</a>
+      <a href="catalogo.html">Catálogo</a>
+      <a href="blog.html">Blog</a>
+      <a href="#testimonios">Testimonios</a>
+      <a href="#contacto">Contacto</a>
+      <a href="#suscripciones">Suscripciones</a>
+      <div class="nav-icons">
+        <button id="wishlist-btn" title="Lista de deseos">
+          <i class="fas fa-heart"></i>
+          <span id="wishlist-count">0</span>
+        </button>
+        <button id="cart-btn" title="Carrito">
+          <i class="fas fa-shopping-cart"></i>
+          <span id="cart-count">0</span>
+        </button>
+      </div>
+    </nav>
+  </header>
+
+  <!-- Hero principal -->
+  <section style="background: url('https://i.postimg.cc/Bnmc34KW/flores-hero.jpg') center/cover no-repeat; padding: 100px 20px; text-align: center; color: white;">
+    <h1 style="font-size: 2.5rem; margin-bottom: 20px;">Flores frescas a domicilio en Tucumán</h1>
+    <p style="font-size: 1.2rem; margin-bottom: 30px;">Ramos, plantas y decoración floral para todas las ocasiones</p>
+    <div class="hero-buttons">
+      <a href="catalogo.html" class="cta-button">Ver catálogo</a>
+      <a href="#suscripciones" class="cta-button secondary">Suscribirme</a>
+    </div>
+  </section>
+
+  <!-- Introducción SEO -->
+  <main>
+    <section style="margin-top: 40px; text-align: center;">
+      <h2>Tu florería de confianza en San Miguel de Tucumán</h2>
+      <p>En <strong>Florería y Vivero Cristina</strong> ofrecemos <em>flores frescas, plantas y arreglos florales</em> con entrega el mismo día. Atendemos eventos, regalos, y momentos especiales con amor, dedicación y puntualidad. Realizá tu pedido online o por WhatsApp.</p>
+    </section>
+
+    <!-- Categorías -->
+    <h2 style="margin-top: 60px;">Explorá nuestras categorías</h2>
+    <div class="categories">
+      <a href="catalogo.html?categoria=Ramos" class="category">
+        <img src="https://i.postimg.cc/FRXNHcTQ/20250427-103645.jpg" alt="Ramos">
+        <h3>Ramos de Flores</h3>
+        <p>Desde $500</p>
+      </a>
+      <a href="catalogo.html?categoria=Plantas" class="category">
+        <img src="https://i.postimg.cc/zXZCqqbh/20241204-082503.jpg" alt="Plantas">
+        <h3>Plantas</h3>
+        <p>Desde $300</p>
+      </a>
+      <a href="catalogo.html?categoria=Novias" class="category">
+        <img src="https://i.postimg.cc/05GKvDpY/IMG-20201210-WA0015.jpg" alt="Novias">
+        <h3>Ramos de Novia</h3>
+        <p>Desde $800</p>
+      </a>
+      <a href="catalogo.html?categoria=Iglesias" class="category">
+        <img src="https://i.postimg.cc/BZ27GYYm/20181006-201056.jpg" alt="Iglesias">
+        <h3>Arreglos para Iglesias</h3>
+        <p>Consultar</p>
+      </a>
+      <a href="catalogo.html?categoria=Fiestas" class="category">
+        <img src="https://i.postimg.cc/BZ8L8R9C/20210109-122057.jpg" alt="Fiestas">
+        <h3>Decoración para Fiestas</h3>
+        <p>Consultar</p>
+      </a>
+    </div>
+
+    <!-- Sección de Suscripciones -->
+    <section id="suscripciones" class="subscription-section">
+      <h2>Suscripciones</h2>
+      <div class="subscription-plans">
+        <div class="plan-card">
+          <h3>Semanal</h3>
+          <p class="price">$1500/mes</p>
+          <ul>
+            <li>Una entrega semanal</li>
+            <li>Selección de flores frescas</li>
+            <li>Personalización disponible</li>
+          </ul>
+          <button onclick="subscribe('weekly')">Suscribirme</button>
+        </div>
+        <div class="plan-card featured">
+          <h3>Mensual</h3>
+          <p class="price">$5000/mes</p>
+          <ul>
+            <li>Una entrega mensual</li>
+            <li>Selección premium</li>
+            <li>Personalización completa</li>
+            <li>Descuento del 10%</li>
+          </ul>
+          <button onclick="subscribe('monthly')">Suscribirme</button>
+        </div>
+      </div>
+    </section>
+
+    <!-- Contacto -->
+    <section id="contacto" class="contact-section">
+      <h2>Contactanos hoy mismo</h2>
+      <div class="contact-cards">
+        <!-- Teléfono -->
+        <div class="contact-card">
+          <i class="fas fa-phone"></i>
+          <h3>Teléfono</h3>
+          <p><a href="tel:+543814778577">+54 9 381 477 8577</a></p>
+        </div>
+
+        <!-- Email -->
+        <div class="contact-card">
+          <i class="fas fa-envelope"></i>
+          <h3>Email</h3>
+          <p><a href="mailto:eleososatuc@gmail.com">eleososatuc@gmail.com</a></p>
+        </div>
+
+        <!-- WhatsApp -->
+        <div class="contact-card">
+          <i class="fab fa-whatsapp"></i>
+          <h3>WhatsApp</h3>
+          <p><a href="https://wa.me/5493814778577" target="_blank">Chatear ahora</a></p>
+        </div>
+
+        <!-- Chat en vivo -->
+        <div class="contact-card">
+          <i class="fas fa-comments"></i>
+          <h3>Chat en vivo</h3>
+          <p><button onclick="openChat()">Abrir chat</button></p>
+        </div>
+      </div>
+
+      <!-- Mapa -->
+      <div class="map-section">
+        <h3>Nuestra ubicación</h3>
+        <iframe 
+          src="https://www.google.com/maps/embed?pb=!1m18!1m12!1m3!1d14244.264061015176!2d-65.2853918!3d-26.8167291!2m3!1f0!2f0!3f0!3m2!1i1024!2i768!4f13.1!3m3!1m2!1s0x941e0b29d13c5fc5%3A0x5c1405c705490d64!2sSolano%20Vera%20480%2C%20Yerba%20Buena%2C%20Tucum%C3%A1n!5e0!3m2!1ses-419!2sar!4v1719098752874" 
+          width="100%" 
+          height="300" 
+          style="border:0; border-radius: 8px;" 
+          allowfullscreen="" 
+          loading="lazy" 
+          referrerpolicy="no-referrer-when-downgrade">
+        </iframe>
+      </div>
+    </section>
+        height="300" 
+        style="border:0; border-radius: 8px;" 
+        allowfullscreen="" 
+        loading="lazy" 
+        referrerpolicy="no-referrer-when-downgrade">
+      </iframe>
+    </div>
+  </section>
+
+
+    <!-- Formulario de contacto -->
+<div style="margin-top: 40px;">
+  <h3 style="text-align: center; color: #4c9a58; margin-bottom: 20px;">Dejanos tu mensaje</h3>
+  <form action="https://formsubmit.co/eleososatuc@gmail.com" method="POST" style="max-width: 600px; margin: 0 auto; display: flex; flex-direction: column; gap: 15px;">
+
+    <input type="text" name="name" placeholder="Tu nombre" required style="padding: 12px; border: 1px solid #ccc; border-radius: 6px;">
+    <input type="email" name="email" placeholder="Tu email" required style="padding: 12px; border: 1px solid #ccc; border-radius: 6px;">
+    <textarea name="message" rows="5" placeholder="Escribí tu mensaje..." required style="padding: 12px; border: 1px solid #ccc; border-radius: 6px;"></textarea>
+
+    <!-- Opcional: mensaje de éxito en redirección -->
+    <input type="hidden" name="_next" value="https://tusitio.github.io/Floreria_cristina/gracias.html">
+
+    <button type="submit" style="background-color: #4caf50; color: white; border: none; padding: 12px; border-radius: 6px; font-size: 1rem; cursor: pointer;">
+      Enviar mensaje
+    </button>
+  </form>
+</div>
+
+  </main>
+
+<!-- Footer -->
+<footer style="background: #f9f9f9; padding: 40px 20px; text-align: center; color: #444; font-size: 0.95rem;">
+  <h3 style="color: #4caf50;">Conocenos y conectá 🌸</h3>
+  <p>Gracias por visitar <strong>Florería Cristina</strong>. Nos dedicamos con amor a cada ramo, arreglo y planta que entregamos.</p>
+  <p>📍 Solano Vera 480, Yerba Buena, Tucumán</p>
+  <p>📞 <a href="https://wa.me/5493814778577" style="color: #4caf50;">+54 9 381 477 8577</a> (WhatsApp)</p>
+  <p>✉️ <a href="mailto:eleososatuc@gmail.com" style="color: #4caf50;">eleososatuc@gmail.com</a></p>
+  <p>🌹 Seguinos en redes para ver nuestras creaciones diarias y consejos florales</p>
+  <br />
+  <p style="color: #999;">© 2025 Florería Cristina — Todos los derechos reservados</p>
+</footer>
+
+  <!-- Barra flotante con íconos oficiales -->
+<style>
+  .redes-flotantes {
+    position: fixed;
+    bottom: 20px;
+    right: 20px;
+    display: flex;
+    flex-direction: column;
+    gap: 12px;
+    z-index: 999;
+  }
+
+  .redes-flotantes a img {
+    width: 50px;
+    height: 50px;
+    border-radius: 50%;
+    box-shadow: 0 4px 10px rgba(0,0,0,0.2);
+    transition: transform 0.3s ease;
+  }
+
+  .redes-flotantes a img:hover {
+    transform: scale(1.1);
+  }
+</style>
+
+<div class="redes-flotantes">
+  <a href="https://wa.me/5493814778577" target="_blank" title="WhatsApp">
+    <img src="https://cdn-icons-png.flaticon.com/512/733/733585.png" alt="WhatsApp">
+  </a>
+  <a href="https://www.instagram.com/floreria.y.vivero.cristina/" target="_blank" title="Instagram">
+    <img src="https://cdn-icons-png.flaticon.com/512/2111/2111463.png" alt="Instagram">
+  </a>
+  <a href="https://www.facebook.com/Floreriayviverocristina" target="_blank" title="Facebook">
+    <img src="https://cdn-icons-png.flaticon.com/512/733/733547.png" alt="Facebook">
+  </a>
+</div>
+
+
+</body>
+</html>

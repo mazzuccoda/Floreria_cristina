@@ -1,0 +1,55 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+  <title>Carrito de Compras | Florería Cristina</title>
+  <link rel="stylesheet" href="style.css" />
+  <script src="https://kit.fontawesome.com/a076d05399.js" crossorigin="anonymous"></script>
+  <script src="script.js"></script>
+</head>
+<body>
+
+  <header>
+    <a href="index.html" class="back-to-home">← Volver al inicio</a>
+    <img src="logo.png" alt="Logo Florería Cristina" />
+    <h1>Carrito de Compras</h1>
+    <div class="cart-summary">
+      <i class="fas fa-shopping-cart"></i>
+      <span id="cart-count">0</span>
+    </div>
+  </header>
+
+  <main>
+    <section>
+      <h2>Tu carrito</h2>
+      <p class="no-products-message">Tu carrito está vacío por ahora...</p>
+
+      <div id="cart-items" class="cart-items"></div>
+
+      <div class="cart-total">
+        <span>Total:</span>
+        <span id="cart-total-price">$0</span>
+      </div>
+
+      <div class="checkout-buttons">
+        <button class="btn-whatsapp" onclick="checkoutCart()">
+          <i class="fab fa-whatsapp"></i> Finalizar Compra por WhatsApp
+        </button>
+        <a href="https://link.mercadopago.com.ar/floresyplantascris" target="_blank" class="btn-mercadopago">
+          <i class="fas fa-credit-card"></i> Pagar con Mercado Pago
+        </a>
+        <button class="clear-cart-button" onclick="clearCart()">Vaciar Carrito</button>
+      </div>
+
+    </section>
+  </main>
+
+  <footer>
+    <p style="text-align: center; padding: 20px; color: #777; font-size: 0.9em;">
+      © 2024 Florería Cristina. Todos los derechos reservados.
+    </p>
+  </footer>
+
+</body>
+</html>

@@ -1,0 +1,107 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Blog - Florería Cristina</title>
+  <link rel="stylesheet" href="style.css">
+  <link href="https://fonts.googleapis.com/css2?family=Quicksand:wght@400;600&display=swap" rel="stylesheet">
+  <style>
+    .blog-grid {
+      display: grid;
+      grid-template-columns: repeat(auto-fit, minmax(280px, 1fr));
+      gap: 30px;
+      margin-top: 40px;
+    }
+
+    .blog-card {
+      background: white;
+      border-radius: 8px;
+      box-shadow: 0 2px 10px rgba(0,0,0,0.08);
+      overflow: hidden;
+      transition: transform 0.2s ease-in-out;
+    }
+
+    .blog-card:hover {
+      transform: translateY(-5px);
+    }
+
+    .blog-card img {
+      width: 100%;
+      height: 180px;
+      object-fit: cover;
+    }
+
+    .blog-card-content {
+      padding: 20px;
+    }
+
+    .blog-card-content h3 {
+      margin: 0 0 10px;
+      font-size: 1.2rem;
+      color: #4c9a58;
+    }
+
+    .blog-card-content p {
+      color: #555;
+      font-size: 0.95rem;
+    }
+
+    .blog-card-content a {
+      display: inline-block;
+      margin-top: 10px;
+      color: #4c9a58;
+      font-weight: 600;
+    }
+  </style>
+</head>
+<body>
+
+  <header>
+    <a href="index.html" class="back-to-home">← Inicio</a>
+    <img src="https://i.postimg.cc/RZ34GxdP/Logo-Crsitina.png" alt="Logo">
+    <h1>Blog</h1>
+  </header>
+
+  <main>
+    <section style="text-align:center;">
+      <h2>Consejos florales, ideas y mucho más</h2>
+      <p>Leé nuestras notas para inspirarte, aprender a cuidar tus flores o regalar mejor 🌸</p>
+    </section>
+
+    <section class="blog-grid">
+      <!-- Post 1 -->
+      <div class="blog-card">
+        <img src="https://i.postimg.cc/4yHDQchZ/cuidados-flores.jpg" alt="Cuidados flores">
+        <div class="blog-card-content">
+          <h3>Cómo cuidar tus ramos para que duren más</h3>
+          <p>Consejos simples y efectivos para que tus flores se mantengan frescas por más días en casa.</p>
+          <a href="post1.html">Leer más →</a>
+        </div>
+      </div>
+
+      <!-- Post 2 -->
+      <div class="blog-card">
+        <img src="https://i.postimg.cc/8k2yC5dV/decoracion-eventos.jpg" alt="Decoración eventos">
+        <div class="blog-card-content">
+          <h3>Ideas de decoración floral para eventos</h3>
+          <p>Inspirate con estas combinaciones de flores para bodas, cumpleaños y celebraciones especiales.</p>
+          <a href="post2.html">Leer más →</a>
+        </div>
+      </div>
+
+      <!-- Post 3 -->
+      <div class="blog-card">
+        <img src="https://i.postimg.cc/L8DVk7Z0/lenguaje-flores.jpg" alt="Lenguaje de las flores">
+        <div class="blog-card-content">
+          <h3>El lenguaje secreto de las flores</h3>
+          <p>Cada flor tiene un mensaje. Descubrí qué transmite cada tipo de flor al regalarla.</p>
+          <a href="post3.html">Leer más →</a>
+        </div>
+      </div>
+    </section>
+  </main>
+
+  <footer>&copy; 2025 Florería Cristina</footer>
+</body>
+</html>
