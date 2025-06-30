@@ -207,6 +207,35 @@ function filterProducts(category) {
   }
 }
 
+// Pequeño analizador CSV que respeta campos entre comillas y comas internas
+function parseCSVLine(line) {
+  const result = [];
+  let current = '';
+  let inQuotes = false;
+
+  for (let i = 0; i < line.length; i++) {
+    const char = line[i];
+
+    if (char === '"') {
+      if (inQuotes && line[i + 1] === '"') {
+        // Manejar comillas escapadas ""
+        current += '"';
+        i++; // saltar la comilla escapada
+      } else {
+        inQuotes = !inQuotes;
+      }
+    } else if (char === ',' && !inQuotes) {
+      result.push(current);
+      current = '';
+    } else {
+      current += char;
+    }
+  }
+
+  result.push(current);
+  return result;
+}
+
 // === Carga de datos desde Google Sheets al cargar el DOM ===
 document.addEventListener('DOMContentLoaded', () => {
     // Solo si estamos en catalogo.html, cargamos los productos
@@ -222,7 +251,7 @@ document.addEventListener('DOMContentLoaded', () => {
                 const rows = csv.trim().split('\n').slice(1); // Ignorar la primera fila (encabezados)
                 allProducts = rows.map(line => {
                     // Asegúrate de que el orden y el número de columnas coincidan con tu hoja
-                    const [id, categoria, imgUrl, descripcion, precio, descuento] = line.split(',');
+                    const [id, categoria, imgUrl, descripcion, precio, descuento] = parseCSVLine(line);
                     return { id, categoria, imgUrl, descripcion, precio: parseFloat(precio), descuento: descuento || null };
                 });
                 filterProducts('Todos'); // Mostrar todos los productos al inicio
